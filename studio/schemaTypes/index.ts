@@ -16,6 +16,8 @@ import person from './person'
 import siteConfig from './siteConfig'
 import testimonial from './testimonial'
 import testimonialsSection from './testimonialsSection'
+import project from './project'
+import siteSettings from './siteSettings'
 
 export const schemaTypes = [
   actionButton,
@@ -36,4 +38,6 @@ export const schemaTypes = [
   siteConfig,
   testimonial,
   testimonialsSection,
+  project,
+  siteSettings,
 ]

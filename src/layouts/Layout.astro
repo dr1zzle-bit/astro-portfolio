@@ -1,9 +1,6 @@
 ---
 import { type SiteConfig, type CustomImage } from 'types';
-import Footer from '@components/Footer.astro';
-import Header from '@components/Header.astro';
 import { fetchData } from '@data/siteConfig';
-
 import '../styles/globals.css';
 
 interface Props {
@@ -21,34 +18,34 @@ const title = [Astro.props.title, titleSuffix].filter(Boolean).join(' | ');
 const resolvedImage = image?.src ? { src: new URL(image.src, Astro.site).toString() } : undefined;
 const canonicalURL = new URL(Astro.request.url, Astro.site);
 
-/**
- * Enforce some standard canonical URL formatting across the site.
- */
 function formatCanonicalURL(url: string | URL) {
     const path = url.toString();
     const hasQueryParams = path.includes('?');
-    // If there are query params, make sure the URL has no trailing slash
     if (hasQueryParams) {
         path.replace(/\/?$/, '');
     }
-    // otherwise, canonical URL always has a trailing slash
     return path.replace(/\/?$/, hasQueryParams ? '' : '/');
 }
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" class="light">
     <head>
-        <!-- High Priority Global Metadata -->
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <title>{title}</title>
         <meta name="generator" content={Astro.generator} />
 
-        <!-- Fonts -->
+        <!-- Fonts: Inter -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+        <!-- GSAP -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" is:inline></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js" is:inline></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/InertiaPlugin.min.js" is:inline></script>
+        <script src="https://unpkg.com/lucide@latest" is:inline></script>
 
         <!-- Low Priority Global Metadata -->
         {configData.favicon?.src && <link rel="icon" type="image/svg+xml" href={configData.favicon.src} />}
@@ -71,9 +68,10 @@ function formatCanonicalURL(url: string | URL) {
         <meta property="twitter:description" content={description} />
         {resolvedImage?.src && <meta property="twitter:image" content={resolvedImage.src} />}
     </head>
-    <body class="antialiased">
-        <Header {...configData.header} />
+    <body class="antialiased font-sans">
+        <div class="ambient-blob"></div>
+        <div class="noise"></div>
+
         <slot />
-        <Footer {...configData.footer} />
     </body>
 </html>

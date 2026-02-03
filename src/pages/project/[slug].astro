@@ -1,0 +1,82 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Navigation from '@components/Navigation.astro';
+import { fetchProjects, fetchProjectBySlug } from '@data/project';
+import { PortableText } from '@portabletext/react';
+import type { Project } from 'types';
+
+export async function getStaticPaths() {
+    const projects = await fetchProjects();
+    return projects.map((project: any) => ({
+        params: { slug: project.slug.current }
+    }));
+}
+
+const { slug } = Astro.params;
+const project: Project = await fetchProjectBySlug(slug as string);
+
+if (!project) return Astro.redirect('/404');
+---
+
+<Layout title={project.title}>
+    <!-- Navigation Overlay -->
+    <header class="fixed top-0 left-0 w-full z-40 p-8 flex justify-between items-start pointer-events-none">
+        <a href="/" class="pointer-events-auto cursor-pointer group">
+            <div
+                class="apple-glass rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-300 hover:scale-[1.02] text-black/60 group-hover:text-black"
+            >
+                <i data-lucide="arrow-left" class="w-5 h-5 md:w-6 md:h-6 transition-transform duration-500 group-hover:-translate-x-1"></i>
+                <h1 class="text-lg md:text-xl font-extrabold tracking-tighter transition-colors">Back</h1>
+            </div>
+        </a>
+    </header>
+
+    <div class="pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 mb-24">
+            <div class="space-y-6">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter">{project.title}</h1>
+                <p class="text-xl md:text-2xl text-black/60 font-medium leading-relaxed">{project.description}</p>
+                <div class="prose prose-lg mt-8 text-black/80 font-sans">
+                    {project.details && <PortableText value={project.details} />}
+                </div>
+            </div>
+            <div class="relative">
+                {
+                    project.mainImage?.asset && (
+                        <img
+                            src={project.mainImage.asset.url}
+                            alt={project.mainImage.alt || project.title}
+                            class="w-full h-auto rounded-lg shadow-lg sticky top-32"
+                        />
+                    )
+                }
+            </div>
+        </div>
+
+        {
+            project.gallery && project.gallery.length > 0 && (
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                    {project.gallery.map(
+                        (image: any) =>
+                            image.asset && (
+                                <div class="rounded-lg overflow-hidden shadow-sm">
+                                    <img
+                                        src={image.asset.url}
+                                        alt={image.alt || ''}
+                                        class="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
+                                        loading="lazy"
+                                    />
+                                </div>
+                            )
+                    )}
+                </div>
+            )
+        }
+    </div>
+
+    <Navigation />
+
+    <script is:inline>
+        if (window.lucide) window.lucide.createIcons();
+    </script>
+</Layout>

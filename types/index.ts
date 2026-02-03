@@ -9,7 +9,7 @@ export interface ActionButton extends Action {
     theme?: 'primary' | 'secondary' | 'accent' | 'neutral';
 }
 
-export interface ActionLink extends Action {}
+export interface ActionLink extends Action { }
 
 export interface BackgroundImage {
     image?: CustomImage;
@@ -50,6 +50,7 @@ export interface CustomImage {
     src: string;
     alt?: string;
     dimensions?: { height: number; width: number };
+    asset?: any;
 }
 
 export interface CtaSection extends Section {
@@ -131,4 +132,28 @@ export interface TestimonialsSection extends Section {
     body?: string;
     items?: Array<Testimonial>;
     columns?: 'one' | 'two';
+}
+
+export interface Project {
+    _id: string;
+    title: string;
+    slug: Slug;
+    mainImage: CustomImage;
+    description: string;
+    gallery?: Array<CustomImage>;
+    details?: any;
+    order: number;
+}
+
+export interface Service {
+    title: string;
+    icon: string;
+    description: string;
+}
+
+export interface SiteSettings {
+    title: string;
+    about?: any;
+    services?: Array<Service>;
+    contactEmail?: string;
 }

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="de" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portfolio - mmichelic</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/InertiaPlugin.min.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: "#ffffff", 
+                        foreground: "#0a0a0a",
+                        muted: "#f5f5f5",
+                        border: "#e5e5e5",
+                    },
+                    boxShadow: {
+                        'apple': '0 8px 32px rgba(0, 0, 0, 0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #0a0a0a;
+            overflow: hidden;
+            cursor: default; 
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            touch-action: none; /* Wichtig für Pinch-Gesten */
+        }
+        
+        #viewport:active { cursor: grabbing; }
+
+        .ambient-blob {
+            position: fixed;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 60% 40%, rgba(240, 245, 255, 0.6) 0%, rgba(255, 255, 255, 0) 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .sheet-panel { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        .grid-img-container {
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+        .grid-item:hover .grid-img-container {
+            transform: scale(0.98);
+        }
+
+        .dot-active {
+            background-color: #000 !important;
+            transform: scale(1.2);
+        }
+
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Smooth transform origin for zooming */
+        #grid-layer {
+            transform-origin: center center;
+            will-change: transform;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="ambient-blob"></div>
+    <div class="noise"></div>
+
+    <header class="fixed top-0 left-0 w-full z-40 p-8 flex justify-between items-start pointer-events-none">
+        <div class="pointer-events-auto cursor-pointer group" onclick="closeSheets()">
+            <div class="apple-glass rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-300 hover:scale-[1.02] text-black/60 group-hover:text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" class="w-5 h-5 md:w-6 md:h-6 transition-transform duration-500 group-hover:rotate-90">
+                    <path d="M480 210H312.4L430.9 91.5l-42.4-42.4L270 167.6V0h-60v167.6L91.5 49.1 49.1 91.5 167.6 210H0v60h167.6L49.1 388.5l42.4 42.4L210 312.4V480h60V312.4l118.5 118.5 42.4-42.4L312.4 270H480v-60z" fill="currentColor"></path>
+                </svg>
+                <h1 class="text-lg md:text-xl font-extrabold tracking-tighter transition-colors">
+                    mmichelic
+                </h1>
+            </div>
+        </div>
+
+        <div class="hidden md:block pointer-events-auto">
+            <div class="apple-glass p-2.5 rounded-lg">
+                <div id="dot-matrix" class="grid grid-cols-3 gap-1.5"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="fixed bottom-0 left-0 w-full h-1 bg-gray-100 z-40 pointer-events-none">
+        <div id="scroll-indicator" class="h-full bg-black absolute top-0 left-0 opacity-50 transition-opacity duration-300"></div>
+    </div>
+
+    <div id="viewport" class="fixed inset-0 w-full h-full z-10 overflow-hidden">
+        <div id="grid-layer" class="absolute top-0 left-0 w-full h-full"></div>
+    </div>
+
+    <div id="intro-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center pointer-events-none">
+        <div class="font-sans font-bold text-[10px] tracking-[0.2em] text-black/40 animate-pulse uppercase">Loading Works</div>
+    </div>
+
+    <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
+        <div class="apple-glass rounded-full p-1.5 flex items-center relative">
+            <div id="nav-pill" class="absolute top-1.5 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 
+                                      transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] z-0 opacity-0"></div>
+            <ul class="flex space-x-1 relative z-10 font-medium text-sm tracking-tight">
+                <li><button onclick="openSheet('about')" class="nav-btn relative px-6 py-2.5 rounded-full text-black/60 hover:text-black transition-colors duration-300">About</button></li>
+                <li><button onclick="openSheet('services')" class="nav-btn relative px-6 py-2.5 rounded-full text-black/60 hover:text-black transition-colors duration-300">Services</button></li>
+                <li><button onclick="openSheet('contact')" class="nav-btn relative px-6 py-2.5 rounded-full text-black/60 hover:text-black transition-colors duration-300">Contact</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="sheet-services" class="sheet-panel fixed inset-y-0 right-0 w-full md:w-[500px] bg-white border-l border-black/5 z-40 transform translate-x-full shadow-2xl p-8 md:p-12 flex flex-col">
+        <div class="flex justify-between items-center mb-8 shrink-0">
+            <span class="font-sans font-bold text-[10px] text-black/30 uppercase tracking-widest">01 / Services</span>
+            <button onclick="closeSheets()" class="p-2 hover:bg-muted rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5 opacity-50"></i></button>
+        </div>
+        
+        <div class="overflow-y-auto no-scrollbar h-full">
+            <div class="space-y-3 font-sans pb-8">
+                <div class="group border border-border rounded-lg p-6 hover:border-black/30 transition-all cursor-default bg-white hover:bg-muted/30">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-bold text-lg tracking-tight">Art Direction</h3>
+                        <i data-lucide="pen-tool" class="w-4 h-4 text-black/20 group-hover:text-black transition-colors"></i>
+                    </div>
+                    <p class="text-sm text-black/50 leading-relaxed font-medium">Visual identities and concept development for brands that value aesthetic purity.</p>
+                </div>
+                <div class="group border border-border rounded-lg p-6 hover:border-black/30 transition-all cursor-default bg-white hover:bg-muted/30">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-bold text-lg tracking-tight">Photography</h3>
+                        <i data-lucide="aperture" class="w-4 h-4 text-black/20 group-hover:text-black transition-colors"></i>
+                    </div>
+                    <p class="text-sm text-black/50 leading-relaxed font-medium">Architecture, Editorial, and Product. Specialized in natural light and geometric composition.</p>
+                </div>
+                <div class="group border border-border rounded-lg p-6 hover:border-black/30 transition-all cursor-default bg-white hover:bg-muted/30">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-bold text-lg tracking-tight">Set Design</h3>
+                        <i data-lucide="box" class="w-4 h-4 text-black/20 group-hover:text-black transition-colors"></i>
+                    </div>
+                    <p class="text-sm text-black/50 leading-relaxed font-medium">Creating physical spaces and installations for campaigns and events.</p>
+                </div>
+
+                <div class="pt-6 border-t border-border mt-4">
+                    <button class="w-full bg-foreground text-white hover:opacity-90 h-12 rounded-md text-sm font-bold transition-opacity flex items-center justify-center gap-2">Download Rate Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sheet-contact" class="sheet-panel fixed inset-y-0 right-0 w-full md:w-[450px] bg-white border-l border-black/5 z-40 transform translate-x-full shadow-2xl p-8 md:p-12 flex flex-col">
+        <div class="flex justify-between items-center mb-10">
+            <span class="font-sans font-bold text-[10px] text-black/30 uppercase tracking-widest">02 / Contact</span>
+            <button onclick="closeSheets()" class="p-2 hover:bg-muted rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5 opacity-50"></i></button>
+        </div>
+        <form id="contactForm" class="space-y-8 flex-1" onsubmit="submitContact(event)">
+            <div class="space-y-2 group">
+                <label class="text-[10px] font-medium text-black/50 uppercase tracking-widest group-focus-within:text-black transition-colors">Name</label>
+                <input type="text" required class="w-full bg-transparent border-b border-border py-2 text-base font-medium text-black/80 focus:outline-none focus:border-black transition-colors placeholder:text-black/10" placeholder="Your Name">
+            </div>
+            <div class="space-y-2 group">
+                <label class="text-[10px] font-medium text-black/50 uppercase tracking-widest group-focus-within:text-black transition-colors">Email</label>
+                <input type="email" required class="w-full bg-transparent border-b border-border py-2 text-base font-medium text-black/80 focus:outline-none focus:border-black transition-colors placeholder:text-black/10" placeholder="email@address.com">
+            </div>
+            <div class="space-y-2 group">
+                <label class="text-[10px] font-medium text-black/50 uppercase tracking-widest group-focus-within:text-black transition-colors">Request</label>
+                <textarea required rows="4" class="w-full bg-transparent border-b border-border py-2 text-base font-medium text-black/80 focus:outline-none focus:border-black transition-colors placeholder:text-black/10 resize-none" placeholder="Project details..."></textarea>
+            </div>
+            <button id="submitBtn" type="submit" class="w-full bg-foreground text-white hover:opacity-90 h-12 rounded-md text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 mt-auto">
+                <span>Send Message</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </form>
+    </div>
+
+    <div id="sheet-about" class="sheet-panel fixed inset-y-0 right-0 w-full md:w-[650px] bg-white border-l border-black/5 z-40 transform translate-x-full shadow-2xl p-0 flex flex-col md:flex-row">
+        <div class="relative h-64 md:h-full md:w-1/2 bg-gray-50 overflow-hidden">
+             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format" class="w-full h-full object-cover" alt="About">
+             <div class="absolute inset-0 bg-black/5"></div>
+        </div>
+        <div class="p-8 md:p-12 md:w-1/2 overflow-y-auto no-scrollbar flex flex-col">
+            <div class="flex justify-between items-center mb-8">
+                <span class="font-sans font-bold text-[10px] text-black/30 uppercase tracking-widest">00 / Profile</span>
+                <button onclick="closeSheets()" class="p-2 hover:bg-muted rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5 opacity-50"></i></button>
+            </div>
+            <h2 class="text-3xl font-extrabold tracking-tighter mb-6">Honest<br>Observation.</h2>
+            <p class="text-sm text-black/60 leading-relaxed mb-8 font-medium">
+                My work exists at the intersection of technical precision and organic imperfection. I don't just capture moments; I structure them. 
+            </p>
+            <div class="space-y-4 text-xs font-bold mt-auto">
+                <div class="flex justify-between border-b border-border pb-2">
+                    <span class="text-black/40">Clients</span>
+                    <span>Vogue, COS, Vitra</span>
+                </div>
+                <div class="flex justify-between border-b border-border pb-2">
+                    <span class="text-black/40">Gear</span>
+                    <span>Hasselblad, Sony Alpha</span>
+                </div>
+                <div class="flex justify-between border-b border-border pb-2">
+                    <span class="text-black/40">Contact</span>
+                    <span>hello@mmichelic.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        lucide.createIcons();
+
+        // --- 1. CONFIG & DATA (40 Unique Images) ---
+        let rawProjects = [
+            { img: "https://images.unsplash.com/photo-1768481664691-4ebcc786a68d?fm=jpg&q=60&w=400", title: "Dawn", desc: "Light" },
+            { img: "https://plus.unsplash.com/premium_photo-1768838786473-9ca31ec635f5?fm=jpg&q=60&w=400", title: "Apex", desc: "Structure" },
+            { img: "https://images.unsplash.com/photo-1768203528069-763a78e7d82b?fm=jpg&q=60&w=400", title: "Silk", desc: "Texture" },
+            { img: "https://images.unsplash.com/photo-1767491727934-d0927e6c12d3?fm=jpg&q=60&w=400", title: "Flow", desc: "Motion" },
+            { img: "https://plus.unsplash.com/premium_photo-1764599123152-51eca6c54826?fm=jpg&q=60&w=400", title: "Mist", desc: "Atmosphere" },
+            { img: "https://images.unsplash.com/photo-1767132254901-a80b06bfd3ea?fm=jpg&q=60&w=400", title: "Core", desc: "Earth" },
+            { img: "https://images.unsplash.com/photo-1768755457768-f4d561ab158e?fm=jpg&q=60&w=400", title: "Grain", desc: "Detail" },
+            { img: "https://plus.unsplash.com/premium_photo-1741275288267-3b0ca5dbc927?fm=jpg&q=60&w=400", title: "Dusk", desc: "Mood" },
+            { img: "https://images.unsplash.com/photo-1707793319199-442369e65305?fm=jpg&q=60&w=400", title: "Form", desc: "Shape" },
+            { img: "https://images.unsplash.com/photo-1764389814703-9c3699580712?fm=jpg&q=60&w=400", title: "Echo", desc: "Space" },
+            { img: "https://plus.unsplash.com/premium_photo-1764599122850-b9194c8ef137?fm=jpg&q=60&w=400", title: "Nova", desc: "Bright" },
+            { img: "https://images.unsplash.com/photo-1767706455344-258b5fce12cb?fm=jpg&q=60&w=400", title: "Flux", desc: "Fluid" },
+            { img: "https://plus.unsplash.com/premium_photo-1768824918620-c5efbc88dcb2?fm=jpg&q=60&w=400", title: "Drift", desc: "Air" },
+            { img: "https://images.unsplash.com/photo-1768590398395-3a1ada8be1ea?fm=jpg&q=60&w=400", title: "Root", desc: "Organic" },
+            { img: "https://images.unsplash.com/photo-1768111598057-f8f435a8719f?fm=jpg&q=60&w=400", title: "Beam", desc: "Focus" },
+            { img: "https://images.unsplash.com/photo-1767821290049-ea327680c5b5?fm=jpg&q=60&w=400", title: "Tide", desc: "Water" },
+            { img: "https://images.unsplash.com/photo-1765901177316-4aa8870c5e71?fm=jpg&q=60&w=400", title: "Haze", desc: "Blur" },
+            { img: "https://images.unsplash.com/photo-1768463852353-046565dc6f74?fm=jpg&q=60&w=400", title: "Axis", desc: "Line" },
+            { img: "https://images.unsplash.com/photo-1764874299927-ffca82850d63?fm=jpg&q=60&w=400", title: "Base", desc: "Solid" },
+            { img: "https://images.unsplash.com/photo-1766851265130-a2d5909927df?fm=jpg&q=60&w=400", title: "Peak", desc: "Height" },
+            { img: "https://images.unsplash.com/photo-1766075012298-0c55635f9429?fm=jpg&q=60&w=400", title: "Veil", desc: "Shadow" },
+            { img: "https://images.unsplash.com/photo-1767969958226-9db2bffc0d5b?fm=jpg&q=60&w=400", title: "Zone", desc: "Area" },
+            { img: "https://images.unsplash.com/photo-1768144931674-d5f5dad44f2a?fm=jpg&q=60&w=400", title: "Fold", desc: "Paper" },
+            { img: "https://images.unsplash.com/photo-1767595343353-e1512892c7e4?fm=jpg&q=60&w=400", title: "Lume", desc: "Light" },
+            { img: "https://images.unsplash.com/photo-1764346345121-174fe2deaba1?fm=jpg&q=60&w=400", title: "Mono", desc: "Tone" },
+            { img: "https://images.unsplash.com/photo-1768590398395-3a1ada8be1ea?fm=jpg&q=60&w=400", title: "Pure", desc: "Clean" },
+            { img: "https://images.unsplash.com/photo-1622593192705-4699764fc000?fm=jpg&q=60&w=400", title: "Rise", desc: "Up" },
+            { img: "https://images.unsplash.com/photo-1768733993357-722d07ffd7dd?fm=jpg&q=60&w=400", title: "Fade", desc: "Soft" },
+            { img: "https://images.unsplash.com/photo-1767893609750-904544ebb882?fm=jpg&q=60&w=400", title: "Mesh", desc: "Net" },
+            { img: "https://images.unsplash.com/photo-1768797646936-0708ed194b03?fm=jpg&q=60&w=400", title: "Glow", desc: "Warm" },
+            { img: "https://plus.unsplash.com/premium_photo-1768142359933-e2a2c717d869?fm=jpg&q=60&w=400", title: "Tile", desc: "Grid" },
+            { img: "https://images.unsplash.com/photo-1768244826678-1aa9304ec3c1?fm=jpg&q=60&w=400", title: "Edge", desc: "Sharp" },
+            { img: "https://images.unsplash.com/photo-1766831185262-3c55739e1d57?fm=jpg&q=60&w=400", title: "Zen", desc: "Calm" },
+            { img: "https://images.unsplash.com/photo-1768329189984-5c3a71ae3592?fm=jpg&q=60&w=400", title: "Bold", desc: "Strong" },
+            { img: "https://plus.unsplash.com/premium_photo-1764538126574-321516ce227d?fm=jpg&q=60&w=400", title: "Leaf", desc: "Nature" },
+            { img: "https://images.unsplash.com/photo-1766583066465-68ab23171b9d?fm=jpg&q=60&w=400", title: "Rock", desc: "Stone" },
+            { img: "https://images.unsplash.com/photo-1754252291886-f7fdd895358b?fm=jpg&q=60&w=400", title: "Wave", desc: "Ocean" },
+            { img: "https://images.unsplash.com/photo-1766955181235-24eb7e00ff27?fm=jpg&q=60&w=400", title: "Sky", desc: "Blue" }
+        ];
+
+        // --- 2. GRID SETUP (40 Items / 10 Rows = 4 Columns) ---
+        const rows = 10;
+        
+        const remainder = rawProjects.length % rows;
+        if (remainder !== 0) {
+            const missing = rows - remainder;
+            for(let i=0; i<missing; i++) rawProjects.push(rawProjects[i]);
+        }
+
+        // Duplicate for width
+        const projects = [...rawProjects, ...rawProjects, ...rawProjects, ...rawProjects, ...rawProjects, ...rawProjects, ...rawProjects, ...rawProjects];
+
+        const gridLayer = document.getElementById('grid-layer');
+        const items = [];
+        
+        const cols = projects.length / rows;
+        const itemWidth = 240; 
+        const itemHeight = 300; 
+        const gap = 10; 
+        const verticalOffset = 40; 
+
+        const totalWidth = cols * (itemWidth + gap);
+        const totalHeight = rows * (itemHeight + gap);
+
+        const uniqueCols = rawProjects.length / rows; 
+        const cycleWidth = uniqueCols * (itemWidth + gap);
+
+        // --- 3. BUILD DOT MATRIX ---
+        const matrixContainer = document.getElementById('dot-matrix');
+        const matrixDots = [];
+        for(let i=0; i<9; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'w-1 h-1 rounded-full bg-gray-300 transition-all duration-300';
+            matrixContainer.appendChild(dot);
+            matrixDots.push(dot);
+        }
+
+        // --- 4. BUILD INFINITE GRID ---
+        for (let i = 0; i < cols * rows; i++) {
+            const el = document.createElement('div');
+            el.className = 'grid-item absolute will-change-transform flex items-center justify-center';
+            el.style.width = itemWidth + 'px';
+            el.style.height = itemHeight + 'px';
+
+            const colIndex = i % cols;
+            const rowIndex = Math.floor(i / cols);
+            const offsetY = (colIndex % 2 !== 0) ? verticalOffset : 0;
+            const bx = colIndex * (itemWidth + gap);
+            const by = rowIndex * (itemHeight + gap) + offsetY;
+            
+            const data = projects[i % projects.length];
+            const num = ((i % rawProjects.length) + 1).toString().padStart(2, '0');
+
+            el.innerHTML = `
+                <div class="grid-img-container w-full h-full relative rounded-sm shadow-sm group cursor-pointer overflow-hidden">
+                    <img src="${data.img}" class="w-full h-full object-cover" loading="lazy">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                         <span class="text-white/50 text-[10px] font-bold font-sans mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">${num}</span>
+                         <h3 class="text-white font-bold text-sm leading-tight translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75">${data.title}</h3>
+                         <p class="text-white/70 text-[10px] font-medium translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-100">${data.desc}</p>
+                    </div>
+                </div>
+            `;
+            gridLayer.appendChild(el);
+            items.push({ el: el, baseX: bx, baseY: by });
+        }
+
+        // --- 5. SCALE / ZOOM VARIABLES ---
+        let currentScale = 1;
+        let startScale = 1;
+        let initialDistance = 0;
+
+        // --- 6. RENDER LOOP ---
+        let xPos = 0, yPos = 0;
+        let lastX = 0;
+        let velX = 0;
+        const scrollIndicator = document.getElementById('scroll-indicator');
+
+        function render() {
+            velX = xPos - lastX;
+            lastX = xPos;
+
+            // Apply global scale to the entire grid layer
+            gsap.set(gridLayer, { scale: currentScale });
+
+            // Infinite Wrap Logic (Center Origin)
+            items.forEach(item => {
+                let dx = (item.baseX + xPos) % totalWidth;
+                let dy = (item.baseY + yPos) % totalHeight;
+
+                // Adjust buffer for zoom
+                const buffer = 400; 
+
+                if (dx < -(itemWidth + buffer)) dx += totalWidth;
+                if (dx > totalWidth - (itemWidth + buffer)) dx -= totalWidth;
+                
+                if (dy < -(itemHeight + buffer)) dy += totalHeight;
+                if (dy > totalHeight - (itemHeight + buffer)) dy -= totalHeight;
+
+                dx -= totalWidth / 2;
+                dy -= totalHeight / 2;
+
+                if (dx < -totalWidth / 2) dx += totalWidth;
+                if (dx > totalWidth / 2) dx -= totalWidth;
+                if (dy < -totalHeight / 2) dy += totalHeight;
+                if (dy > totalHeight / 2) dy -= totalHeight;
+
+                dx += window.innerWidth / 2;
+                dy += window.innerHeight / 2 - (verticalOffset / 4);
+
+                gsap.set(item.el, { x: dx, y: dy });
+            });
+
+            // Dot Matrix Logic
+            const mapW = totalWidth / 2; 
+            const mapH = totalHeight / 2;
+            let mx = Math.floor(((Math.abs(xPos) % mapW) / mapW) * 3);
+            let my = Math.floor(((Math.abs(yPos) % mapH) / mapH) * 3);
+            if(xPos > 0) mx = 2 - mx;
+            if(yPos > 0) my = 2 - my;
+            const index = (my * 3) + mx;
+            matrixDots.forEach(d => d.classList.remove('dot-active'));
+            if(matrixDots[index]) matrixDots[index].classList.add('dot-active');
+            else matrixDots[4].classList.add('dot-active');
+
+            // Scroll Sync
+            const viewportW = window.innerWidth;
+            let barWidth = (viewportW / cycleWidth) * viewportW;
+            if(barWidth < 50) barWidth = 50; 
+            if(barWidth > viewportW) barWidth = viewportW;
+
+            const progress = (Math.abs(xPos) % cycleWidth) / cycleWidth;
+            
+            const trackWidth = viewportW - barWidth;
+            let barX = progress * trackWidth;
+            
+            if(xPos > 0) barX = (1 - progress) * trackWidth;
+
+            barX = barX % viewportW; 
+            if(barX < 0) barX += viewportW;
+
+            gsap.set(scrollIndicator, { width: barWidth, x: barX });
+
+            requestAnimationFrame(render);
+        }
+
+        // --- 7. PINCH ZOOM EVENTS ---
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialDistance = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                startScale = currentScale;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                const dist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                const delta = dist / initialDistance;
+                let newScale = startScale * delta;
+
+                // Limits: Max 1 (default size), Min 0.6 (zoomed out)
+                if (newScale > 1) newScale = 1;
+                if (newScale < 0.6) newScale = 0.6;
+
+                currentScale = newScale;
+            }
+        }, { passive: true });
+
+        // --- 8. DRAGGABLE ---
+        const dragInstance = Draggable.create(document.createElement("div"), {
+            trigger: document.body,
+            type: "x,y",
+            inertia: true,
+            onDrag: function() { xPos = this.x; yPos = this.y; },
+            onThrowUpdate: function() { xPos = this.x; yPos = this.y; }
+        })[0];
+
+        window.addEventListener("wheel", (e) => {
+            const speed = 0.8;
+            xPos -= e.deltaX * speed;
+            yPos -= e.deltaY * speed;
+            gsap.set(dragInstance.target, {x: xPos, y: yPos});
+            dragInstance.update(); 
+        }, { passive: true });
+
+        render();
+
+        // --- 9. INTRO ---
+        window.onload = () => {
+            const tl = gsap.timeline();
+            tl.to("#intro-overlay", { opacity: 0, duration: 0.8, ease: "power2.inOut" })
+              .from(".grid-item", {
+                  scale: 0.8,
+                  opacity: 0,
+                  duration: 1.0,
+                  stagger: {
+                      amount: 0.5,
+                      from: "center",
+                      grid: [rows, cols]
+                  },
+                  ease: "expo.out"
+              }, "-=0.4")
+              .from("header", { y: -20, opacity: 0, duration: 1 }, "-=0.8")
+              .from("nav", { y: 20, opacity: 0, duration: 1 }, "-=0.8");
+        };
+
+        // --- 10. SHEETS LOGIC ---
+        const sheets = {
+            'about': document.getElementById('sheet-about'),
+            'services': document.getElementById('sheet-services'),
+            'contact': document.getElementById('sheet-contact')
+        };
+        const navPill = document.getElementById('nav-pill');
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const appleEase = "cubic-bezier(0.32, 0.72, 0, 1)";
+
+        function openSheet(name) {
+            closeSheets(); 
+            const sheet = sheets[name];
+            sheet.classList.remove('translate-x-full');
+            const btn = Array.from(navBtns).find(b => b.textContent.toLowerCase().includes(name));
+            const rect = btn.getBoundingClientRect();
+            const parentRect = btn.parentElement.parentElement.getBoundingClientRect();
+            navBtns.forEach(b => { b.classList.remove('text-white'); b.classList.add('text-black/60'); });
+            btn.classList.remove('text-black/60'); btn.classList.add('text-white');
+            gsap.to(navPill, { x: rect.left - parentRect.left, width: rect.width, opacity: 1, duration: 0.5, ease: appleEase });
+        }
+
+        function closeSheets() {
+            Object.values(sheets).forEach(s => s.classList.add('translate-x-full'));
+            gsap.to(navPill, { opacity: 0, duration: 0.3 });
+            navBtns.forEach(b => { b.classList.remove('text-white'); b.classList.add('text-black/60'); });
+        }
+
+        // --- 11. CONTACT FORM LOGIC ---
+        function submitContact(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const btnContent = btn.innerHTML;
+            
+            btn.innerHTML = 'Sending...';
+            btn.classList.add('opacity-70', 'cursor-wait');
+            
+            setTimeout(() => {
+                btn.innerHTML = 'Message Sent';
+                btn.classList.remove('opacity-70', 'cursor-wait', 'bg-foreground', 'text-white');
+                btn.classList.add('bg-green-600', 'text-white');
+                document.getElementById('contactForm').reset();
+                setTimeout(() => {
+                    btn.innerHTML = btnContent;
+                    btn.classList.remove('bg-green-600', 'text-white');
+                    btn.classList.add('bg-foreground', 'text-white');
+                }, 3000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

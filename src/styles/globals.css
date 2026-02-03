@@ -1,32 +1,80 @@
 @import 'tailwindcss';
 @plugin "daisyui";
 
-@plugin "daisyui/theme" {
-    name: 'dark';
-    --color-primary: #ffae9c;
-    --color-primary-content: #171227;
-    --color-secondary: #fff2d7;
-    --color-secondary-content: #171227;
-    --color-accent: #e3f1ff;
-    --color-accent-content: #171227;
-    --color-neutral: #2e293c;
-    --color-neutral-content: #ffffff;
-    --color-base-100: #171227;
-    --color-base-200: #2e293c;
-    --color-base-content: #ffffff;
+@theme {
+    --color-background: #ffffff;
+    --color-foreground: #0a0a0a;
+    --color-muted: #f5f5f5;
+    --color-border: #e5e5e5;
+    --font-sans: 'Inter', sans-serif;
 }
 
-@plugin "daisyui/theme" {
-    name: 'light';
-    --color-primary: #ffae9c;
-    --color-primary-content: #171227;
-    --color-secondary: #fff2d7;
-    --color-secondary-content: #171227;
-    --color-accent: #e3f1ff;
-    --color-accent-content: #171227;
-    --color-neutral: #171227;
-    --color-neutral-content: #ffffff;
-    --color-base-100: #ffffff;
-    --color-base-200: #d7d8e4;
-    --color-base-content: #171227;
+body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    overflow: hidden;
+    cursor: default;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    touch-action: none;
+}
+
+#viewport:active {
+    cursor: grabbing;
+}
+
+.ambient-blob {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 60% 40%, rgba(240, 245, 255, 0.6) 0%, rgba(255, 255, 255, 0) 60%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.sheet-panel {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.grid-img-container {
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.grid-item:hover .grid-img-container {
+    transform: scale(0.98);
+}
+
+.dot-active {
+    background-color: #000 !important;
+    transform: scale(1.2);
+}
+
+.apple-glass {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth transform origin for zooming */
+#grid-layer {
+    transform-origin: center center;
+    will-change: transform;
 }

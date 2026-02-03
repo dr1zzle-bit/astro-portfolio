@@ -1,0 +1,66 @@
+---
+import Layout from '@layouts/Layout.astro';
+import PortfolioGrid from '@components/PortfolioGrid.astro';
+import Navigation from '@components/Navigation.astro';
+import { fetchProjects } from '@data/project';
+
+const projects = await fetchProjects();
+---
+
+<Layout title="Portfolio">
+    <!-- Intro Overlay -->
+    <div id="intro-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center pointer-events-none">
+        <div class="font-sans font-bold text-[10px] tracking-[0.2em] text-black/40 animate-pulse uppercase">Loading Works</div>
+    </div>
+
+    <!-- Header / Logo Overlay -->
+    <header class="fixed top-0 left-0 w-full z-40 p-8 flex justify-between items-start pointer-events-none">
+        <div class="pointer-events-auto cursor-pointer group" onclick="if(window.closeSheets) window.closeSheets()">
+            <div
+                class="apple-glass rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-300 hover:scale-[1.02] text-black/60 group-hover:text-black"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 480 480"
+                    class="w-5 h-5 md:w-6 md:h-6 transition-transform duration-500 group-hover:rotate-90"
+                >
+                    <path
+                        d="M480 210H312.4L430.9 91.5l-42.4-42.4L270 167.6V0h-60v167.6L91.5 49.1 49.1 91.5 167.6 210H0v60h167.6L49.1 388.5l42.4 42.4L210 312.4V480h60V312.4l118.5 118.5 42.4-42.4L312.4 270H480v-60z"
+                        fill="currentColor"></path>
+                </svg>
+                <h1 class="text-lg md:text-xl font-extrabold tracking-tighter transition-colors">mmichelic</h1>
+            </div>
+        </div>
+
+        <div class="hidden md:block pointer-events-auto">
+            <div class="apple-glass p-2.5 rounded-lg">
+                <div id="dot-matrix" class="grid grid-cols-3 gap-1.5">
+                    {Array.from({ length: 9 }).map(() => <div class="w-1 h-1 rounded-full bg-gray-300 transition-all duration-300" />)}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="fixed bottom-0 left-0 w-full h-1 bg-gray-100 z-40 pointer-events-none">
+        <div id="scroll-indicator" class="h-full bg-black absolute top-0 left-0 opacity-50 transition-opacity duration-300"></div>
+    </div>
+
+    <PortfolioGrid projects={projects} />
+    <Navigation />
+
+    <script is:inline>
+        // Intro Logic
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
+            tl.to('#intro-overlay', { opacity: 0, duration: 0.8, ease: 'power2.inOut' })
+                .from('header', { y: -20, opacity: 0, duration: 1 }, '-=0.8')
+                .from('nav', { y: 20, opacity: 0, duration: 1 }, '-=0.8');
+        });
+
+        // Dot Matrix Logic (Simplified hook for PortfolioGrid to access if needed)
+        // Note: The dot matrix logic is tightly coupled with the render loop in PortfolioGrid.
+        // Ideally, PortfolioGrid should handle this update.
+        // Since PortfolioGrid script runs independently, we need to pass the matrix container ID.
+        // It's already doing: document.getElementById('dot-matrix');
+    </script>
+</Layout>

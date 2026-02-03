@@ -1,0 +1,228 @@
+---
+import type { Project } from 'types';
+
+interface Props {
+    projects: Project[];
+}
+
+const { projects } = Astro.props;
+
+// Replicate grid logic parameters for SSR
+const rows = 10;
+// Duplicate projects to fill grid if needed (simulating the client-side logic for consistency)
+// The client script logic:
+// const remainder = rawProjects.length % rows; ...
+// const projects = [...rawProjects, ...];
+// The client script duplicates rawProjects 8 times in the example!
+// We should probably just pass the raw data and let the client script build the DOM?
+// But previously I decided to SSR.
+// If I SSR, I need to generate exactly the same number of items.
+// Let's replicate the logic:
+
+let displayProjects = [...projects];
+const remainder = displayProjects.length % rows;
+if (remainder !== 0) {
+    const missing = rows - remainder;
+    for (let i = 0; i < missing; i++) displayProjects.push(displayProjects[i]);
+}
+// Duplicate 8 times as per original script
+let gridItems: Project[] = [];
+for (let i = 0; i < 8; i++) {
+    gridItems = [...gridItems, ...displayProjects];
+}
+
+const cols = gridItems.length / rows;
+const itemWidth = 240;
+const itemHeight = 300;
+const gap = 10;
+const verticalOffset = 40;
+---
+
+<div id="viewport" class="fixed inset-0 w-full h-full z-10 overflow-hidden">
+    <div id="grid-layer" class="absolute top-0 left-0 w-full h-full">
+        {
+            gridItems.map((project, i) => {
+                const colIndex = i % cols;
+                const rowIndex = Math.floor(i / cols);
+                const offsetY = colIndex % 2 !== 0 ? verticalOffset : 0;
+                const bx = colIndex * (itemWidth + gap);
+                const by = rowIndex * (itemHeight + gap) + offsetY;
+
+                const num = ((i % projects.length) + 1).toString().padStart(2, '0');
+                const imageUrl = project.mainImage?.asset?.url || '';
+
+                return (
+                    <div
+                        class="grid-item absolute will-change-transform flex items-center justify-center pointer-events-auto"
+                        style={`width: ${itemWidth}px; height: ${itemHeight}px;`}
+                        data-bx={bx}
+                        data-by={by}
+                        onclick={`window.location.href='/project/${project.slug.current}'`}
+                    >
+                        <div class="grid-img-container w-full h-full relative rounded-sm shadow-sm group cursor-pointer overflow-hidden">
+                            {imageUrl && <img src={imageUrl} class="w-full h-full object-cover" loading="lazy" alt={project.title} />}
+                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                <span class="text-white/50 text-[10px] font-bold font-sans mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                    {num}
+                                </span>
+                                <h3 class="text-white font-bold text-sm leading-tight translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                                    {project.title}
+                                </h3>
+                                <p class="text-white/70 text-[10px] font-medium translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-100">
+                                    {project.description}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })
+        }
+    </div>
+</div>
+
+<script define:vars={{ cols, rows, itemWidth, itemHeight, gap, verticalOffset, totalWidth: cols * (itemWidth + gap), totalHeight: rows * (itemHeight + gap) }}>
+    const gridLayer = document.getElementById('grid-layer');
+    const items = Array.from(document.querySelectorAll('.grid-item')).map((el) => ({
+        el,
+        baseX: parseFloat(el.getAttribute('data-bx')),
+        baseY: parseFloat(el.getAttribute('data-by'))
+    }));
+
+    // --- SCALE / ZOOM VARIABLES ---
+    let currentScale = 1;
+    let startScale = 1;
+    let initialDistance = 0;
+
+    // --- RENDER LOOP ---
+    let xPos = 0,
+        yPos = 0;
+    let lastX = 0;
+    let velX = 0;
+    const scrollIndicator = document.getElementById('scroll-indicator'); // Assuming this exists in layout or header?
+    // Wait, scrollIndicator is in the original HTML body. I should probably include it here or in Layout.
+    // I'll assume it might be missing and handle it gracefully.
+
+    function render() {
+        velX = xPos - lastX;
+        lastX = xPos;
+
+        // Apply global scale to the entire grid layer
+        gsap.set(gridLayer, { scale: currentScale });
+
+        // Infinite Wrap Logic (Center Origin)
+        items.forEach((item) => {
+            let dx = (item.baseX + xPos) % totalWidth;
+            let dy = (item.baseY + yPos) % totalHeight;
+
+            // Adjust buffer for zoom
+            const buffer = 400;
+
+            if (dx < -(itemWidth + buffer)) dx += totalWidth;
+            if (dx > totalWidth - (itemWidth + buffer)) dx -= totalWidth;
+
+            if (dy < -(itemHeight + buffer)) dy += totalHeight;
+            if (dy > totalHeight - (itemHeight + buffer)) dy -= totalHeight;
+
+            dx -= totalWidth / 2;
+            dy -= totalHeight / 2;
+
+            if (dx < -totalWidth / 2) dx += totalWidth;
+            if (dx > totalWidth / 2) dx -= totalWidth;
+            if (dy < -totalHeight / 2) dy += totalHeight;
+            if (dy > totalHeight / 2) dy -= totalHeight;
+
+            dx += window.innerWidth / 2;
+            dy += window.innerHeight / 2 - verticalOffset / 4;
+
+            gsap.set(item.el, { x: dx, y: dy });
+        });
+
+        requestAnimationFrame(render);
+    }
+
+    // --- PINCH ZOOM EVENTS ---
+    window.addEventListener(
+        'touchstart',
+        (e) => {
+            if (e.touches.length === 2) {
+                initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                startScale = currentScale;
+            }
+        },
+        { passive: true }
+    );
+
+    window.addEventListener(
+        'touchmove',
+        (e) => {
+            if (e.touches.length === 2) {
+                const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                const delta = dist / initialDistance;
+                let newScale = startScale * delta;
+
+                // Limits: Max 1 (default size), Min 0.6 (zoomed out)
+                if (newScale > 1) newScale = 1;
+                if (newScale < 0.6) newScale = 0.6;
+
+                currentScale = newScale;
+            }
+        },
+        { passive: true }
+    );
+
+    // --- DRAGGABLE ---
+    // Draggable requires an element to trigger. Body is fine.
+    // Need to ensure Draggable is loaded globally (Layout handles this).
+
+    // We wait for window load to ensure GSAP is ready?
+    // Or just run it. Inline scripts run after parser.
+
+    // Check if Draggable exists
+    if (typeof Draggable !== 'undefined') {
+        const dragInstance = Draggable.create(document.createElement('div'), {
+            trigger: document.body,
+            type: 'x,y',
+            inertia: true,
+            onDrag: function () {
+                xPos = this.x;
+                yPos = this.y;
+            },
+            onThrowUpdate: function () {
+                xPos = this.x;
+                yPos = this.y;
+            }
+        })[0];
+
+        window.addEventListener(
+            'wheel',
+            (e) => {
+                const speed = 0.8;
+                xPos -= e.deltaX * speed;
+                yPos -= e.deltaY * speed;
+                gsap.set(dragInstance.target, { x: xPos, y: yPos });
+                dragInstance.update();
+            },
+            { passive: true }
+        );
+    }
+
+    render();
+
+    // Intro Animation
+    const tl = gsap.timeline();
+    tl.from(
+        '.grid-item',
+        {
+            scale: 0.8,
+            opacity: 0,
+            duration: 1.0,
+            stagger: {
+                amount: 0.5,
+                from: 'center',
+                grid: [rows, cols]
+            },
+            ease: 'expo.out'
+        },
+        '+=0.2'
+    );
+</script>
