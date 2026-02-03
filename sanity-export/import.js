@@ -1,11 +1,12 @@
 const path = require('path');
+require('dotenv').config();
 const fs = require('fs');
 const { createClient } = require('@sanity/client');
 const sanityImport = require('@sanity/import');
-const Configstore = require('configstore');
+// const Configstore = require('configstore');
 
-const config = new Configstore('sanity', {}, { globalConfigPath: true });
-const token = config.get('authToken');
+// const config = new Configstore('sanity', {}, { globalConfigPath: true });
+const token = process.env.SANITY_TOKEN;
 const projectId = process.argv[2];
 
 const client = createClient({
