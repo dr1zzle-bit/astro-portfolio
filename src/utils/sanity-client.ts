@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 export const sanityConfig: ClientConfig = {
     projectId: SANITY_PROJECT_ID,
     dataset: SANITY_DATASET || 'production',
-    useCdn: false,
+    useCdn: !isDev,
     apiVersion: '2024-01-31',
     token: SANITY_TOKEN,
     perspective: isDev || isDeployPreview || previewDrafts ? 'previewDrafts' : 'published'
