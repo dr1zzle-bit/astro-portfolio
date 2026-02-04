@@ -212,21 +212,24 @@ const verticalOffset = 40;
 
     // --- DRAGGABLE ---
     if (typeof Draggable !== 'undefined') {
+        if (typeof InertiaPlugin !== 'undefined') {
+            gsap.registerPlugin(Draggable, InertiaPlugin);
+        }
+
         const dragInstance = Draggable.create(document.createElement('div'), {
             trigger: document.getElementById('viewport'),
             type: 'x,y',
             inertia: {
-                resistance: 150, // "Raised" settings (was 75)
-                minDuration: 0.3,
+                resistance: 200, // Smooth glide, not too slippery, not too heavy
                 end: {
                     x: { min: -1000000, max: 1000000 },
                     y: { min: -1000000, max: 1000000 }
                 }
             },
-            dragResistance: 0.1, // "Raised" settings (was 0) for a bit of weight
-            edgeResistance: 0.65,
+            dragResistance: 0, // 1:1 Response
+            edgeResistance: 0.5,
+            overshootTolerance: 0,
             allowEventDefault: false,
-            // minimumMovement: 5, // Default is usually fine to distinguish clicks
             onDrag: function () {
                 xPos = this.x;
                 yPos = this.y;
