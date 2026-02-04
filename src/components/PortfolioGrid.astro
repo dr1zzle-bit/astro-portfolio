@@ -184,16 +184,16 @@ const verticalOffset = 40;
             trigger: document.getElementById('viewport'),
             type: 'x,y',
             inertia: {
-                resistance: 100, // Lower resistance = longer glide
-                minDuration: 0.5,
-                maxDuration: 2,
+                resistance: 75, // Lower = longer throw (default ~1000)
+                minDuration: 0.3, // Shorter min duration for snappy small flicks
                 end: {
-                    x: { min: -100000, max: 100000 }, // Let it flow freely
-                    y: { min: -100000, max: 100000 }
+                    x: { min: -1000000, max: 1000000 },
+                    y: { min: -1000000, max: 1000000 }
                 }
             },
-            dragResistance: 0.2, // Make it feel lighter
-            edgeResistance: 0.5,
+            dragResistance: 0, // 0 = 1:1 coupling (most responsive)
+            edgeResistance: 0.65, // Nice rubber-band feel at (theoretical) edges
+            allowEventDefault: false, // Prevent native scrolling interactions
             onDrag: function () {
                 xPos = this.x;
                 yPos = this.y;
