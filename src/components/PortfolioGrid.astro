@@ -58,7 +58,7 @@ const verticalOffset = 40;
                         style={`width: ${itemWidth}px; height: ${itemHeight}px;`}
                         data-bx={bx}
                         data-by={by}
-                        onclick={`window.location.href='/project/${project.slug.current}'`}
+                        onclick={`handleGridClick(event, '${project.slug.current}')`}
                     >
                         <div class="grid-img-container w-full h-full relative rounded-sm shadow-sm group cursor-pointer overflow-hidden">
                             {imageUrl && <img src={imageUrl} class="w-full h-full object-cover" loading="lazy" alt={project.title} />}
@@ -94,14 +94,53 @@ const verticalOffset = 40;
     let startScale = 1;
     let initialDistance = 0;
 
+    // --- MOBILE INTERACTION STATE ---
+    let activeItem = null;
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    // Global click to clear selection
+    if (isTouch) {
+        window.addEventListener('click', (e) => {
+            const clickedItem = e.target.closest('.grid-item');
+            if (!clickedItem && activeItem) {
+                // Clicked background, clear active
+                activeItem.classList.remove('mobile-active');
+                activeItem.querySelector('.grid-img-container .absolute').classList.remove('opacity-100'); // Force clear helper
+                activeItem = null;
+            }
+        });
+    }
+
+    window.handleGridClick = function (e, slug) {
+        // Draggable handles drag-prevention automatically (click event won't fire if dragged)
+
+        if (!isTouch) {
+            // Desktop: Navigate immediately
+            window.location.href = `/project/${slug}`;
+            return;
+        }
+
+        // Mobile Logic
+        const item = e.currentTarget;
+
+        if (activeItem === item) {
+            // Second tap: Navigate
+            window.location.href = `/project/${slug}`;
+        } else {
+            // First tap: Activate
+            if (activeItem) {
+                activeItem.classList.remove('mobile-active');
+            }
+            activeItem = item;
+            activeItem.classList.add('mobile-active');
+        }
+    };
+
     // --- RENDER LOOP ---
     let xPos = 0,
         yPos = 0;
     let lastX = 0;
     let velX = 0;
-    const scrollIndicator = document.getElementById('scroll-indicator'); // Assuming this exists in layout or header?
-    // Wait, scrollIndicator is in the original HTML body. I should probably include it here or in Layout.
-    // I'll assume it might be missing and handle it gracefully.
 
     function render() {
         velX = xPos - lastX;
@@ -121,7 +160,7 @@ const verticalOffset = 40;
             if (dx < -(itemWidth + buffer)) dx += totalWidth;
             if (dx > totalWidth - (itemWidth + buffer)) dx -= totalWidth;
 
-            if (dy < -(itemHeight + buffer)) dy += totalHeight;
+            if (dx < -(itemHeight + buffer)) dy += totalHeight;
             if (dy > totalHeight - (itemHeight + buffer)) dy -= totalHeight;
 
             dx -= totalWidth / 2;
@@ -172,28 +211,22 @@ const verticalOffset = 40;
     );
 
     // --- DRAGGABLE ---
-    // Draggable requires an element to trigger. Body is fine.
-    // Need to ensure Draggable is loaded globally (Layout handles this).
-
-    // We wait for window load to ensure GSAP is ready?
-    // Or just run it. Inline scripts run after parser.
-
-    // Check if Draggable exists
     if (typeof Draggable !== 'undefined') {
         const dragInstance = Draggable.create(document.createElement('div'), {
             trigger: document.getElementById('viewport'),
             type: 'x,y',
             inertia: {
-                resistance: 75, // Lower = longer throw (default ~1000)
-                minDuration: 0.3, // Shorter min duration for snappy small flicks
+                resistance: 150, // "Raised" settings (was 75)
+                minDuration: 0.3,
                 end: {
                     x: { min: -1000000, max: 1000000 },
                     y: { min: -1000000, max: 1000000 }
                 }
             },
-            dragResistance: 0, // 0 = 1:1 coupling (most responsive)
-            edgeResistance: 0.65, // Nice rubber-band feel at (theoretical) edges
-            allowEventDefault: false, // Prevent native scrolling interactions
+            dragResistance: 0.1, // "Raised" settings (was 0) for a bit of weight
+            edgeResistance: 0.65,
+            allowEventDefault: false,
+            // minimumMovement: 5, // Default is usually fine to distinguish clicks
             onDrag: function () {
                 xPos = this.x;
                 yPos = this.y;

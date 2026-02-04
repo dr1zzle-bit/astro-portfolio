@@ -59,8 +59,19 @@ body {
     transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
 }
 
-.grid-item:hover .grid-img-container {
+.grid-item:hover .grid-img-container,
+.grid-item.mobile-active .grid-img-container {
     transform: scale(0.98);
+}
+
+.grid-item:hover .absolute,
+.grid-item.mobile-active .absolute {
+    opacity: 1 !important;
+}
+
+.grid-item:hover .translate-y-2,
+.grid-item.mobile-active .translate-y-2 {
+    transform: translateY(0) !important;
 }
 
 .dot-active {
