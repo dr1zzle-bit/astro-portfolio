@@ -184,8 +184,16 @@ const verticalOffset = 40;
             trigger: document.getElementById('viewport'),
             type: 'x,y',
             inertia: {
-                resistance: 100 // Lower resistance for smoother/longer glide
+                resistance: 100, // Lower resistance = longer glide
+                minDuration: 0.5,
+                maxDuration: 2,
+                end: {
+                    x: { min: -100000, max: 100000 }, // Let it flow freely
+                    y: { min: -100000, max: 100000 }
+                }
             },
+            dragResistance: 0.2, // Make it feel lighter
+            edgeResistance: 0.5,
             onDrag: function () {
                 xPos = this.x;
                 yPos = this.y;
