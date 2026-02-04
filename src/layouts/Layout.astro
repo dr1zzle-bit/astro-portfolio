@@ -2,6 +2,7 @@
 import { type SiteConfig, type CustomImage } from 'types';
 import { fetchData } from '@data/siteConfig';
 import { urlFor } from '../utils/sanity-client';
+import Cursor from '../components/Cursor.astro';
 import '../styles/globals.css';
 
 interface Props {
@@ -93,8 +94,16 @@ function formatCanonicalURL(url: string | URL) {
         {resolvedImage?.src && imageObj?.alt && <meta property="twitter:image:alt" content={imageObj.alt} />}
     </head>
     <body class="antialiased font-sans">
+        <Cursor />
         <div class="ambient-blob"></div>
 
         <slot />
+
+        <script is:inline>
+            // Global Lucide Fallback
+            window.addEventListener('load', () => {
+                if (window.lucide) window.lucide.createIcons();
+            });
+        </script>
     </body>
 </html>

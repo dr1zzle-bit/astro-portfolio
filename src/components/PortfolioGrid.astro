@@ -39,7 +39,7 @@ const gap = 10;
 const verticalOffset = 40;
 ---
 
-<div id="viewport" class="fixed inset-0 w-full h-full z-10 overflow-hidden">
+<div id="viewport" class="fixed inset-0 w-full h-full z-10 overflow-hidden" style="touch-action: none;">
     <div id="grid-layer" class="absolute top-0 left-0 w-full h-full">
         {
             gridItems.map((project, i) => {

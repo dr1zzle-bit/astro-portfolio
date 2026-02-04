@@ -1,0 +1,49 @@
+---
+
+---
+
+<div
+    id="custom-cursor"
+    class="fixed w-3 h-3 bg-black rounded-full pointer-events-none z-[9999] mix-blend-difference hidden md:block top-0 left-0 -translate-x-1/2 -translate-y-1/2"
+>
+</div>
+
+<script>
+    // Access global GSAP
+    const gsap = (window as any).gsap;
+
+    const cursor = document.getElementById('custom-cursor');
+
+    if (cursor && window.matchMedia('(hover: hover)').matches) {
+        // Use quickTo for best performance
+        const xTo = gsap.quickTo(cursor, 'x', { duration: 0.1, ease: 'power3' });
+        const yTo = gsap.quickTo(cursor, 'y', { duration: 0.1, ease: 'power3' });
+
+        // Initial position off-screen
+        gsap.set(cursor, { x: -100, y: -100 });
+
+        window.addEventListener('mousemove', (e) => {
+            xTo(e.clientX);
+            yTo(e.clientY);
+        });
+
+        // Optional: Scale up on clickable elements
+        const clickables = document.querySelectorAll('a, button, .cursor-pointer');
+        clickables.forEach((el) => {
+            el.addEventListener('mouseenter', () => gsap.to(cursor, { scale: 2.5, duration: 0.2 }));
+            el.addEventListener('mouseleave', () => gsap.to(cursor, { scale: 1, duration: 0.2 }));
+        });
+
+        // Handle Hover for dynamically added elements (like grid items) using delegation if possible,
+        // but for now global listener is expensive. Sticky hover effects are usually done via CSS or specific listeners.
+        // We will keep it simple.
+
+        // Show cursor when moving
+        window.addEventListener('mouseover', () => {
+            cursor.style.opacity = '1';
+        });
+        window.addEventListener('mouseout', () => {
+            cursor.style.opacity = '0';
+        });
+    }
+</script>
