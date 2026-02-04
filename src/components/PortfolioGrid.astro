@@ -1,5 +1,6 @@
 ---
 import type { Project } from 'types';
+import { urlFor } from '../utils/sanity-client';
 
 interface Props {
     projects: Project[];
@@ -49,7 +50,7 @@ const verticalOffset = 40;
                 const by = rowIndex * (itemHeight + gap) + offsetY;
 
                 const num = ((i % projects.length) + 1).toString().padStart(2, '0');
-                const imageUrl = project.mainImage?.asset?.url || '';
+                const imageUrl = project.mainImage ? urlFor(project.mainImage).width(400).format('webp').url() : '';
 
                 return (
                     <div
@@ -180,7 +181,7 @@ const verticalOffset = 40;
     // Check if Draggable exists
     if (typeof Draggable !== 'undefined') {
         const dragInstance = Draggable.create(document.createElement('div'), {
-            trigger: document.body,
+            trigger: document.getElementById('viewport'),
             type: 'x,y',
             inertia: true,
             onDrag: function () {

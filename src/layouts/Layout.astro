@@ -1,6 +1,7 @@
 ---
 import { type SiteConfig, type CustomImage } from 'types';
 import { fetchData } from '@data/siteConfig';
+import { urlFor } from '../utils/sanity-client';
 import '../styles/globals.css';
 
 interface Props {
@@ -8,14 +9,34 @@ interface Props {
     addTitleSuffix?: boolean;
     description?: string;
     image?: CustomImage;
+    seoTitle?: string;
+    seoDescription?: string;
+    seoImage?: CustomImage;
 }
 
-const { addTitleSuffix, description, image } = Astro.props;
+const { addTitleSuffix } = Astro.props;
 
 const configData: SiteConfig = (await fetchData()) || {};
+
+// Title Logic: Project SEO Title > Page Title > Global Logic
 const titleSuffix = configData.titleSuffix && addTitleSuffix !== false ? configData.titleSuffix : undefined;
-const title = [Astro.props.title, titleSuffix].filter(Boolean).join(' | ');
-const resolvedImage = image?.src ? { src: new URL(image.src, Astro.site).toString() } : undefined;
+const baseTitle = Astro.props.seoTitle || Astro.props.title;
+const title = [baseTitle, titleSuffix].filter(Boolean).join(' | ');
+
+// Description Logic: Project SEO > Page Description > Global SEO > Default
+const description = Astro.props.seoDescription || Astro.props.description || configData.seoDescription;
+
+// Image Logic: Project SEO > Page Image > Global SEO
+const imageObj = Astro.props.seoImage || Astro.props.image || configData.seoImage;
+const resolvedImage = imageObj?.asset
+    ? { src: new URL(urlFor(imageObj).width(1200).height(630).url(), Astro.site).toString() }
+    : imageObj?.src
+      ? { src: new URL(imageObj.src, Astro.site).toString() }
+      : undefined;
+
+// Keywords
+const keywords = configData.seoKeywords ? configData.seoKeywords.join(', ') : undefined;
+
 const canonicalURL = new URL(Astro.request.url, Astro.site);
 
 function formatCanonicalURL(url: string | URL) {
@@ -48,7 +69,8 @@ function formatCanonicalURL(url: string | URL) {
         <script src="https://unpkg.com/lucide@latest" is:inline></script>
 
         <!-- Low Priority Global Metadata -->
-        {configData.favicon?.src && <link rel="icon" type="image/svg+xml" href={configData.favicon.src} />}
+        <!-- Favicon -->
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="sitemap" href="/sitemap-index.xml" />
 
         <!-- Page Metadata -->
@@ -60,6 +82,7 @@ function formatCanonicalURL(url: string | URL) {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         {resolvedImage?.src && <meta property="og:image" content={resolvedImage.src} />}
+        {resolvedImage?.src && imageObj?.alt && <meta property="og:image:alt" content={imageObj.alt} />}
 
         <!-- X/Twitter -->
         <meta property="twitter:card" content="summary_large_image" />
@@ -67,6 +90,7 @@ function formatCanonicalURL(url: string | URL) {
         <meta property="twitter:title" content={title} />
         <meta property="twitter:description" content={description} />
         {resolvedImage?.src && <meta property="twitter:image" content={resolvedImage.src} />}
+        {resolvedImage?.src && imageObj?.alt && <meta property="twitter:image:alt" content={imageObj.alt} />}
     </head>
     <body class="antialiased font-sans">
         <div class="ambient-blob"></div>

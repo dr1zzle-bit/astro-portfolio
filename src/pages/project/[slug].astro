@@ -2,14 +2,17 @@
 import Layout from '@layouts/Layout.astro';
 import Navigation from '@components/Navigation.astro';
 import { fetchProjects, fetchProjectBySlug } from '@data/project';
+import { urlFor } from '../../utils/sanity-client';
 import { PortableText } from '@portabletext/react';
 import type { Project } from 'types';
 
 export async function getStaticPaths() {
     const projects = await fetchProjects();
-    return projects.map((project: any) => ({
-        params: { slug: project.slug.current }
-    }));
+    return projects
+        .filter((project: any) => project.slug?.current)
+        .map((project: any) => ({
+            params: { slug: project.slug.current }
+        }));
 }
 
 const { slug } = Astro.params;
@@ -18,7 +21,7 @@ const project: Project = await fetchProjectBySlug(slug as string);
 if (!project) return Astro.redirect('/404');
 ---
 
-<Layout title={project.title}>
+<Layout title={project.title} seoTitle={project.seoTitle} seoDescription={project.seoDescription} seoImage={project.seoImage}>
     <!-- Navigation Overlay -->
     <header class="fixed top-0 left-0 w-full z-40 p-8 flex justify-between items-start pointer-events-none">
         <a href="/" class="pointer-events-auto cursor-pointer group">
@@ -31,8 +34,9 @@ if (!project) return Astro.redirect('/404');
         </a>
     </header>
 
+    <!-- Combine Images for Lightbox -->
     <div class="pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 mb-24">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 mb-24 items-start">
             <div class="space-y-6">
                 <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter">{project.title}</h1>
                 <p class="text-xl md:text-2xl text-black/60 font-medium leading-relaxed">{project.description}</p>
@@ -40,13 +44,14 @@ if (!project) return Astro.redirect('/404');
                     {project.details && <PortableText value={project.details} />}
                 </div>
             </div>
-            <div class="relative">
+            <div class="relative sticky top-32">
                 {
                     project.mainImage?.asset && (
                         <img
-                            src={project.mainImage.asset.url}
+                            src={urlFor(project.mainImage).width(1200).format('webp').url()}
                             alt={project.mainImage.alt || project.title}
-                            class="w-full h-auto rounded-lg shadow-lg sticky top-32"
+                            class="w-full h-auto rounded-lg shadow-lg cursor-zoom-in hover:scale-[1.01] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out will-change-transform"
+                            onclick="openLightbox(0)"
                         />
                     )
                 }
@@ -55,16 +60,18 @@ if (!project) return Astro.redirect('/404');
 
         {
             project.gallery && project.gallery.length > 0 && (
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                <div class="columns-1 md:columns-2 lg:columns-3 gap-[10px] space-y-[10px]">
                     {project.gallery.map(
-                        (image: any) =>
+                        (image: any, index: number) =>
                             image.asset && (
-                                <div class="rounded-lg overflow-hidden shadow-sm">
+                                <div class="break-inside-avoid rounded-lg overflow-hidden shadow-sm group">
                                     <img
-                                        src={image.asset.url}
+                                        src={urlFor(image).width(800).format('webp').url()}
                                         alt={image.alt || ''}
-                                        class="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
+                                        data-index={index + 1}
+                                        class="w-full h-auto object-cover hover:scale-[1.02] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out cursor-zoom-in gallery-img will-change-transform"
                                         loading="lazy"
+                                        onclick={`openLightbox(${index + 1})`}
                                     />
                                 </div>
                             )
@@ -74,9 +81,139 @@ if (!project) return Astro.redirect('/404');
         }
     </div>
 
+    <!-- LIGHTBOX OVERLAY -->
+    <div
+        id="lightbox"
+        class="fixed inset-0 z-[100] bg-white/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
+    >
+        <button onclick="closeLightbox()" class="absolute top-8 right-8 p-2 hover:bg-black/5 rounded-full transition-colors z-20">
+            <i data-lucide="x" class="w-8 h-8 text-black/60"></i>
+        </button>
+
+        <button onclick="prevImage()" class="absolute left-8 top-1/2 -translate-y-1/2 p-4 hover:bg-black/5 rounded-full transition-colors z-20 hidden md:block">
+            <i data-lucide="chevron-left" class="w-8 h-8 text-black/60"></i>
+        </button>
+
+        <button
+            onclick="nextImage()"
+            class="absolute right-8 top-1/2 -translate-y-1/2 p-4 hover:bg-black/5 rounded-full transition-colors z-20 hidden md:block"
+        >
+            <i data-lucide="chevron-right" class="w-8 h-8 text-black/60"></i>
+        </button>
+
+        <div class="relative w-full h-full flex items-center justify-center p-4 md:p-20">
+            <img id="lightbox-img" src="" class="max-w-full max-h-full object-contain shadow-2xl rounded-sm" />
+            <div id="lightbox-loader" class="absolute inset-0 flex items-center justify-center">
+                <div class="w-8 h-8 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-black/50 text-sm font-medium tracking-widest">
+            <span id="lb-current">1</span> / <span id="lb-total">1</span>
+        </div>
+    </div>
+
     <Navigation />
 
-    <script is:inline>
+    <script
+        is:inline
+        define:vars={{
+            allImages: [
+                project.mainImage
+                    ? {
+                          thumb: urlFor(project.mainImage).width(1200).format('webp').url(),
+                          full: urlFor(project.mainImage).width(1800).format('webp').url(),
+                          alt: project.mainImage.alt || project.title
+                      }
+                    : null,
+                ...(project.gallery || []).map((img) => ({
+                    thumb: urlFor(img).width(800).format('webp').url(),
+                    full: urlFor(img).width(1800).format('webp').url(),
+                    alt: img.alt || ''
+                }))
+            ].filter(Boolean)
+        }}
+    >
         if (window.lucide) window.lucide.createIcons();
+
+        // LIGHTBOX LOGIC
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+        const lbLoader = document.getElementById('lightbox-loader');
+        const lbCurrent = document.getElementById('lb-current');
+        const lbTotal = document.getElementById('lb-total');
+
+        let currentIndex = 0;
+        const totalImages = allImages.length;
+
+        // Initialize Total
+        if (lbTotal) lbTotal.innerText = totalImages;
+
+        window.openLightbox = function (index) {
+            if (!allImages.length) return;
+            currentIndex = index;
+            updateLightbox(true);
+
+            lightbox.classList.remove('pointer-events-none', 'opacity-0');
+            document.body.style.overflow = 'hidden'; // Lock Scroll
+
+            // GSAP Entrance
+            gsap.fromTo(lbImg, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' });
+        };
+
+        window.closeLightbox = function () {
+            lightbox.classList.add('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = ''; // Unlock Scroll
+        };
+
+        window.nextImage = function (e) {
+            if (e) e.stopPropagation();
+            currentIndex = (currentIndex + 1) % totalImages;
+            updateLightbox();
+        };
+
+        window.prevImage = function (e) {
+            if (e) e.stopPropagation();
+            currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+            updateLightbox();
+        };
+
+        function updateLightbox(firstOpen = false) {
+            const data = allImages[currentIndex];
+            if (!data) return;
+
+            // Show Loader
+            lbLoader.classList.remove('hidden');
+            if (!firstOpen) {
+                gsap.to(lbImg, { opacity: 0.5, duration: 0.2 });
+            }
+
+            // Load Image
+            const img = new Image();
+            img.onload = () => {
+                lbImg.src = data.full;
+                lbLoader.classList.add('hidden');
+                gsap.to(lbImg, { opacity: 1, duration: 0.3 });
+            };
+            img.src = data.full;
+
+            // Update Counter
+            lbCurrent.innerText = currentIndex + 1;
+        }
+
+        // Keyboard Nav
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('opacity-0')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') prevImage();
+        });
+
+        // Background Click Close
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox || e.target.parentElement === lightbox) {
+                closeLightbox();
+            }
+        });
     </script>
 </Layout>

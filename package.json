@@ -16,6 +16,7 @@
         "@portabletext/react": "^6.0.2",
         "@sanity/astro": "^3.1.6",
         "@sanity/client": "^6.22.0",
+        "@sanity/image-url": "^2.0.3",
         "@sanity/validation": "^3.14.4",
         "@tailwindcss/vite": "^4.0.9",
         "astro": "^5.1.1",

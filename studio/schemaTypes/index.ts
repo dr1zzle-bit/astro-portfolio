@@ -18,6 +18,11 @@ import testimonial from './testimonial'
 import testimonialsSection from './testimonialsSection'
 import project from './project'
 import siteSettings from './siteSettings'
+import sheet from './sheet'
+import aboutModule from './modules/about'
+import servicesModule from './modules/services'
+import contactModule from './modules/contact'
+import textModule from './modules/text'
 
 export const schemaTypes = [
   actionButton,
@@ -40,4 +45,9 @@ export const schemaTypes = [
   testimonialsSection,
   project,
   siteSettings,
+  sheet,
+  aboutModule,
+  servicesModule,
+  contactModule,
+  textModule,
 ]

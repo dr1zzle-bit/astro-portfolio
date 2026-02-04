@@ -12,11 +12,11 @@
 body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    overflow: hidden;
+    /* overflow: hidden; removed to allow scrolling on detail pages */
     cursor: default;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    touch-action: none;
+    -webkit-font-smoothing: antialiased;
 }
 
 #viewport:active {
@@ -77,4 +77,28 @@ body {
 #grid-layer {
     transform-origin: center center;
     will-change: transform;
+}
+
+@keyframes rotate-infinite {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.sheet-floater {
+    animation: rotate-infinite 80s linear infinite;
+    transform-origin: center center;
+    opacity: 0.03;
+    width: 400px;
+    position: absolute;
+    bottom: -70px;
+    right: -70px;
+    pointer-events: none;
+    z-index: 0;
+    color: currentColor;
 }

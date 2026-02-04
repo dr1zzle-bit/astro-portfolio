@@ -11,7 +11,11 @@ const CONFIG_QUERY_OBJ = `{
     logo ${IMAGE}
   },
   footer,
-  titleSuffix
+  footer,
+  titleSuffix,
+  seoDescription,
+  seoImage,
+  seoKeywords
 }`;
 
 export async function fetchData() {

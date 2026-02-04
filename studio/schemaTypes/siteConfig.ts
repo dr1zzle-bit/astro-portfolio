@@ -1,5 +1,5 @@
-import {defineField, defineType} from 'sanity'
-import {CogIcon} from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
+import { CogIcon } from '@sanity/icons'
 
 export default defineType({
   name: 'siteConfig',
@@ -44,6 +44,42 @@ export default defineType({
         'Suffix to append to the title tag of all pages, except in pages where the this behavior is disabled.',
       type: 'string',
       group: 'seo',
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'Global SEO Description',
+      description: 'Default meta description for the site. 150-160 characters recommended.',
+      type: 'text',
+      rows: 3,
+      group: 'seo',
+    }),
+    defineField({
+      name: 'seoImage',
+      title: 'Global SEO Share Image',
+      description: 'Default image used for social sharing (Open Graph / Twitter). Recommended size: 1200x630px.',
+      type: 'image',
+      group: 'seo',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+        }),
+      ],
+    }),
+    defineField({
+      name: 'seoKeywords',
+      title: 'Global SEO Keywords',
+      description: 'Keywords separated by commas.',
+      type: 'array',
+      group: 'seo',
+      of: [{ type: 'string' }],
+      options: {
+        layout: 'tags',
+      },
     }),
   ],
   preview: {

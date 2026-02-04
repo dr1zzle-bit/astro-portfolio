@@ -18,17 +18,23 @@ const PROJECT_QUERY = `*[_type == "project"] | order(order asc) {
 }`;
 
 export async function fetchProjects() {
-    return await client.fetch(PROJECT_QUERY);
+  return await client.fetch(PROJECT_QUERY);
 }
 
 export async function fetchProjectBySlug(slug: string) {
-    return await client.fetch(`*[_type == "project" && slug.current == $slug][0] {
+  return await client.fetch(`*[_type == "project" && slug.current == $slug][0] {
         ...,
         mainImage {
             asset->,
             alt
         },
         gallery[] {
+            asset->,
+            alt
+        },
+        seoTitle,
+        seoDescription,
+        seoImage {
             asset->,
             alt
         }

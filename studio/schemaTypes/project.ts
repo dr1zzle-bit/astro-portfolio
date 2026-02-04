@@ -26,6 +26,13 @@ export default defineType({
             options: {
                 hotspot: true,
             },
+            fields: [
+                defineField({
+                    name: 'alt',
+                    type: 'string',
+                    title: 'Alternative Text',
+                }),
+            ],
         }),
         defineField({
             name: 'description',
@@ -38,7 +45,20 @@ export default defineType({
             name: 'gallery',
             title: 'Gallery',
             type: 'array',
-            of: [{ type: 'image' }],
+            of: [
+                defineField({
+                    name: 'image',
+                    type: 'image',
+                    options: { hotspot: true },
+                    fields: [
+                        defineField({
+                            name: 'alt',
+                            type: 'string',
+                            title: 'Alternative Text',
+                        }),
+                    ],
+                }),
+            ],
         }),
         defineField({
             name: 'details',
@@ -51,5 +71,44 @@ export default defineType({
             title: 'Order',
             type: 'number',
         }),
+        defineField({
+            name: 'seoTitle',
+            title: 'SEO Title Override',
+            description: 'Overrides the default title (Project Title | Site Title). Optional.',
+            type: 'string',
+            group: 'seo',
+        }),
+        defineField({
+            name: 'seoDescription',
+            title: 'SEO Description Override',
+            description: 'Overrides the short description for search engines. Optional.',
+            type: 'text',
+            rows: 3,
+            group: 'seo',
+        }),
+        defineField({
+            name: 'seoImage',
+            title: 'SEO Share Image Override',
+            description: 'Overrides the main image for social sharing. Optional.',
+            type: 'image',
+            group: 'seo',
+            options: {
+                hotspot: true,
+            },
+            fields: [
+                defineField({
+                    name: 'alt',
+                    type: 'string',
+                    title: 'Alternative Text',
+                }),
+            ],
+        }),
+    ],
+    fieldsets: [
+        {
+            name: 'seo',
+            title: 'SEO & Social Sharing',
+            options: { collapsible: true, collapsed: true },
+        },
     ],
 })

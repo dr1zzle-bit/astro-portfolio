@@ -114,6 +114,9 @@ export interface SiteConfig {
     header?: Header;
     footer?: Footer;
     titleSuffix?: string;
+    seoDescription?: string;
+    seoImage?: CustomImage;
+    seoKeywords?: string[];
 }
 
 export interface Slug {
@@ -143,6 +146,9 @@ export interface Project {
     gallery?: Array<CustomImage>;
     details?: any;
     order: number;
+    seoTitle?: string;
+    seoDescription?: string;
+    seoImage?: CustomImage;
 }
 
 export interface Service {
@@ -153,7 +159,12 @@ export interface Service {
 
 export interface SiteSettings {
     title: string;
-    about?: any;
-    services?: Array<Service>;
     contactEmail?: string;
+    mainMenu?: Array<Sheet>;
+}
+
+export interface Sheet {
+    title: string;
+    slug: Slug;
+    modules?: Array<any>; // Polymorphic modules
 }

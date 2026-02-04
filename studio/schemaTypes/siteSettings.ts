@@ -11,29 +11,15 @@ export default defineType({
             type: 'string',
         }),
         defineField({
-            name: 'about',
-            title: 'About Content',
+            name: 'mainMenu',
+            title: 'Main Menu',
+            description: 'Order and select visible sheets',
             type: 'array',
-            of: [{ type: 'block' }],
-        }),
-        defineField({
-            name: 'services',
-            title: 'Services',
-            type: 'array',
-            of: [
-                {
-                    type: 'object',
-                    fields: [
-                        defineField({ name: 'title', type: 'string' }),
-                        defineField({ name: 'icon', type: 'string', description: 'Lucide icon name' }),
-                        defineField({ name: 'description', type: 'text' }),
-                    ],
-                },
-            ],
+            of: [{ type: 'reference', to: [{ type: 'sheet' }] }],
         }),
         defineField({
             name: 'contactEmail',
-            title: 'Contact Email',
+            title: 'Global Contact Email (Fallback)',
             type: 'string',
         }),
     ],
