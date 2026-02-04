@@ -92,16 +92,16 @@ if (!project) return Astro.redirect('/404');
 
         <button
             onclick="prevImage()"
-            class="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-2 md:p-4 hover:bg-black/5 rounded-full transition-colors z-20"
+            class="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-3 md:p-4 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full transition-all z-50"
         >
-            <i data-lucide="chevron-left" class="w-8 h-8 text-black/60"></i>
+            <i data-lucide="chevron-left" class="w-6 h-6 md:w-8 md:h-8 text-black/80"></i>
         </button>
 
         <button
             onclick="nextImage()"
-            class="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-2 md:p-4 hover:bg-black/5 rounded-full transition-colors z-20"
+            class="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-3 md:p-4 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full transition-all z-50"
         >
-            <i data-lucide="chevron-right" class="w-8 h-8 text-black/60"></i>
+            <i data-lucide="chevron-right" class="w-6 h-6 md:w-8 md:h-8 text-black/80"></i>
         </button>
 
         <div class="relative w-full h-full flex items-center justify-center p-4 md:p-20">
@@ -276,6 +276,7 @@ if (!project) return Astro.redirect('/404');
 
             function resetProxy(instance) {
                 gsap.set(instance.target, { x: 0, y: 0 });
+                gsap.set(lbImg, { x: 0 }); // Fix: Explicitly reset image position
                 instance.update();
             }
         }
