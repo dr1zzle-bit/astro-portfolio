@@ -142,118 +142,122 @@ const verticalOffset = 40;
     let lastX = 0;
     let velX = 0;
 
-    function render() {
-        velX = xPos - lastX;
-        lastX = xPos;
+    // --- DRAGGABLE & CUSTOM PHYSICS ---
+    let isDragging = false;
+    let velocityX = 0;
+    let velocityY = 0;
+    const friction = 0.96; // Adjusts glide duration (closer to 1 = longer)
 
-        // Apply global scale to the entire grid layer
-        gsap.set(gridLayer, { scale: currentScale });
-
-        // Infinite Wrap Logic (Center Origin)
-        items.forEach((item) => {
-            let dx = (item.baseX + xPos) % totalWidth;
-            let dy = (item.baseY + yPos) % totalHeight;
-
-            // Adjust buffer for zoom
-            const buffer = 400;
-
-            if (dx < -(itemWidth + buffer)) dx += totalWidth;
-            if (dx > totalWidth - (itemWidth + buffer)) dx -= totalWidth;
-
-            if (dx < -(itemHeight + buffer)) dy += totalHeight;
-            if (dy > totalHeight - (itemHeight + buffer)) dy -= totalHeight;
-
-            dx -= totalWidth / 2;
-            dy -= totalHeight / 2;
-
-            if (dx < -totalWidth / 2) dx += totalWidth;
-            if (dx > totalWidth / 2) dx -= totalWidth;
-            if (dy < -totalHeight / 2) dy += totalHeight;
-            if (dy > totalHeight / 2) dy -= totalHeight;
-
-            dx += window.innerWidth / 2;
-            dy += window.innerHeight / 2 - verticalOffset / 4;
-
-            gsap.set(item.el, { x: dx, y: dy });
-        });
-
-        requestAnimationFrame(render);
-    }
-
-    // --- PINCH ZOOM EVENTS ---
-    window.addEventListener(
-        'touchstart',
-        (e) => {
-            if (e.touches.length === 2) {
-                initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                startScale = currentScale;
-            }
-        },
-        { passive: true }
-    );
-
-    window.addEventListener(
-        'touchmove',
-        (e) => {
-            if (e.touches.length === 2) {
-                const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                const delta = dist / initialDistance;
-                let newScale = startScale * delta;
-
-                // Limits: Max 1 (default size), Min 0.6 (zoomed out)
-                if (newScale > 1) newScale = 1;
-                if (newScale < 0.6) newScale = 0.6;
-
-                currentScale = newScale;
-            }
-        },
-        { passive: true }
-    );
-
-    // --- DRAGGABLE ---
     if (typeof Draggable !== 'undefined') {
-        if (typeof InertiaPlugin !== 'undefined') {
-            gsap.registerPlugin(Draggable, InertiaPlugin);
-        }
+        const dummyDiv = document.createElement('div');
 
-        const dragInstance = Draggable.create(document.createElement('div'), {
+        const dragInstance = Draggable.create(dummyDiv, {
             trigger: document.getElementById('viewport'),
             type: 'x,y',
-            inertia: {
-                resistance: 200, // Smooth glide, not too slippery, not too heavy
-                end: {
-                    x: { min: -1000000, max: 1000000 },
-                    y: { min: -1000000, max: 1000000 }
-                }
-            },
-            dragResistance: 0, // 1:1 Response
-            edgeResistance: 0.5,
-            overshootTolerance: 0,
+            dragResistance: 0,
             allowEventDefault: false,
+            onDragStart: () => {
+                isDragging = true;
+                velocityX = 0;
+                velocityY = 0;
+            },
             onDrag: function () {
                 xPos = this.x;
                 yPos = this.y;
             },
-            onThrowUpdate: function () {
-                xPos = this.x;
-                yPos = this.y;
+            onDragEnd: function () {
+                isDragging = false;
+                // Boost velocity slightly for better "fling" feel
+                // The velocityX/Y are calculated in the render loop based on movement
             }
         })[0];
 
+        // --- RENDER LOOP WITH PHYSICS ---
+        // Overwriting the previous render function to include momentum
+        function physicsRender() {
+            if (isDragging) {
+                // Track Velocity
+                // Current xPos is set by Draggable
+                velocityX = xPos - lastX;
+                velocityY = yPos - lastY;
+            } else {
+                // Apply Momentum
+                if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
+                    xPos += velocityX;
+                    yPos += velocityY;
+                    velocityX *= friction;
+                    velocityY *= friction;
+
+                    // Sync Draggable Proxy so next drag starts from correct spot
+                    gsap.set(dummyDiv, { x: xPos, y: yPos });
+                    dragInstance.update();
+                }
+            }
+
+            lastX = xPos;
+            lastY = yPos; // Update last positions
+
+            // Helper for infinite wrap vars
+            const totalW = totalWidth;
+            const totalH = totalHeight;
+
+            // Apply global scale
+            gsap.set(gridLayer, { scale: currentScale });
+
+            // Infinite Wrap Logic (Optimized)
+            items.forEach((item) => {
+                let dx = (item.baseX + xPos) % totalW;
+                let dy = (item.baseY + yPos) % totalH;
+                const buffer = 400;
+
+                if (dx < -(itemWidth + buffer)) dx += totalW;
+                if (dx > totalW - (itemWidth + buffer)) dx -= totalW;
+
+                if (dx < -(itemHeight + buffer)) dy += totalH;
+                if (dy > totalH - (itemHeight + buffer)) dy -= totalH;
+
+                dx -= totalW / 2;
+                dy -= totalH / 2;
+
+                // Wrap Logic 2 (Centering)
+                if (dx < -totalW / 2) dx += totalW;
+                if (dx > totalW / 2) dx -= totalW;
+                if (dy < -totalH / 2) dy += totalH;
+                if (dy > totalH / 2) dy -= totalH;
+
+                dx += window.innerWidth / 2;
+                dy += window.innerHeight / 2 - verticalOffset / 4;
+
+                gsap.set(item.el, { x: dx, y: dy });
+            });
+
+            requestAnimationFrame(physicsRender);
+        }
+
+        // Start the physics loop instead of the basic render
+        physicsRender();
+
+        // Wheel support for custom physics
         window.addEventListener(
             'wheel',
             (e) => {
-                const speed = 0.8;
+                const speed = 1.2;
                 xPos -= e.deltaX * speed;
                 yPos -= e.deltaY * speed;
-                gsap.set(dragInstance.target, { x: xPos, y: yPos });
+
+                // Kill momentum on wheel scrape
+                velocityX = 0;
+                velocityY = 0;
+
+                gsap.set(dummyDiv, { x: xPos, y: yPos });
                 dragInstance.update();
             },
             { passive: true }
         );
+    } else {
+        // Fallback if Draggable missing
+        render();
     }
-
-    render();
 
     // Intro Animation
     const tl = gsap.timeline();
