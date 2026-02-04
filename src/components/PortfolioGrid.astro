@@ -146,7 +146,8 @@ const verticalOffset = 40;
     let isDragging = false;
     let velocityX = 0;
     let velocityY = 0;
-    const friction = 0.96; // Adjusts glide duration (closer to 1 = longer)
+    const friction = 0.95; // Slightly more resistance for "gentler" stop
+    const velocityMultiplier = 0.75; // Dampen the input speed so it doesn't fly too fast
 
     if (typeof Draggable !== 'undefined') {
         const dummyDiv = document.createElement('div');
@@ -156,30 +157,36 @@ const verticalOffset = 40;
             type: 'x,y',
             dragResistance: 0,
             allowEventDefault: false,
-            onDragStart: () => {
+            onDragStart: function () {
+                // Abort if multi-touch (Zooming)
+                if (this.pointerEvent.touches && this.pointerEvent.touches.length > 1) {
+                    isDragging = false;
+                    return;
+                }
                 isDragging = true;
                 velocityX = 0;
                 velocityY = 0;
             },
             onDrag: function () {
+                // Ignore if zooming
+                if (this.pointerEvent.touches && this.pointerEvent.touches.length > 1) {
+                    isDragging = false;
+                    return;
+                }
                 xPos = this.x;
                 yPos = this.y;
             },
             onDragEnd: function () {
                 isDragging = false;
-                // Boost velocity slightly for better "fling" feel
-                // The velocityX/Y are calculated in the render loop based on movement
             }
         })[0];
 
         // --- RENDER LOOP WITH PHYSICS ---
-        // Overwriting the previous render function to include momentum
         function physicsRender() {
             if (isDragging) {
-                // Track Velocity
-                // Current xPos is set by Draggable
-                velocityX = xPos - lastX;
-                velocityY = yPos - lastY;
+                // Track Velocity with Dampening
+                velocityX = (xPos - lastX) * velocityMultiplier;
+                velocityY = (yPos - lastY) * velocityMultiplier;
             } else {
                 // Apply Momentum
                 if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
@@ -188,14 +195,14 @@ const verticalOffset = 40;
                     velocityX *= friction;
                     velocityY *= friction;
 
-                    // Sync Draggable Proxy so next drag starts from correct spot
+                    // Sync Draggable Proxy
                     gsap.set(dummyDiv, { x: xPos, y: yPos });
                     dragInstance.update();
                 }
             }
 
             lastX = xPos;
-            lastY = yPos; // Update last positions
+            lastY = yPos;
 
             // Helper for infinite wrap vars
             const totalW = totalWidth;
@@ -210,19 +217,18 @@ const verticalOffset = 40;
                 let dy = (item.baseY + yPos) % totalH;
                 const buffer = 400;
 
-                if (dx < -(itemWidth + buffer)) dx += totalW;
-                if (dx > totalW - (itemWidth + buffer)) dx -= totalW;
+                if (dx < -(itemWidth + buffer)) dx += totalWidth;
+                if (dx > totalWidth - (itemWidth + buffer)) dx -= totalWidth;
 
-                if (dx < -(itemHeight + buffer)) dy += totalH;
+                if (dx < -(itemHeight + buffer)) dy += totalHeight;
                 if (dy > totalH - (itemHeight + buffer)) dy -= totalH;
 
                 dx -= totalW / 2;
                 dy -= totalH / 2;
 
-                // Wrap Logic 2 (Centering)
-                if (dx < -totalW / 2) dx += totalW;
-                if (dx > totalW / 2) dx -= totalW;
-                if (dy < -totalH / 2) dy += totalH;
+                if (dx < -totalWidth / 2) dx += totalWidth;
+                if (dx > totalWidth / 2) dx -= totalWidth;
+                if (dy < -totalHeight / 2) dy += totalHeight;
                 if (dy > totalH / 2) dy -= totalH;
 
                 dx += window.innerWidth / 2;
@@ -234,21 +240,18 @@ const verticalOffset = 40;
             requestAnimationFrame(physicsRender);
         }
 
-        // Start the physics loop instead of the basic render
+        // Start the physics loop
         physicsRender();
 
-        // Wheel support for custom physics
+        // Wheel support
         window.addEventListener(
             'wheel',
             (e) => {
                 const speed = 1.2;
                 xPos -= e.deltaX * speed;
                 yPos -= e.deltaY * speed;
-
-                // Kill momentum on wheel scrape
                 velocityX = 0;
                 velocityY = 0;
-
                 gsap.set(dummyDiv, { x: xPos, y: yPos });
                 dragInstance.update();
             },
@@ -258,6 +261,36 @@ const verticalOffset = 40;
         // Fallback if Draggable missing
         render();
     }
+
+    // --- PINCH ZOOM EVENTS ---
+    window.addEventListener(
+        'touchstart',
+        (e) => {
+            if (e.touches.length === 2) {
+                initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                startScale = currentScale;
+            }
+        },
+        { passive: true }
+    );
+
+    window.addEventListener(
+        'touchmove',
+        (e) => {
+            if (e.touches.length === 2) {
+                const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                const delta = dist / initialDistance;
+                let newScale = startScale * delta;
+
+                // Limits: Max 1 (default size), Min 0.6 (zoomed out)
+                if (newScale > 1) newScale = 1;
+                if (newScale < 0.6) newScale = 0.6;
+
+                currentScale = newScale;
+            }
+        },
+        { passive: true }
+    );
 
     // Intro Animation
     const tl = gsap.timeline();
