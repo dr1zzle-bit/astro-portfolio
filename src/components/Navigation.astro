@@ -13,7 +13,7 @@ const settings: SiteSettings =
 const { mainMenu, contactEmail } = settings;
 ---
 
-<nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
+<nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 md:z-[70] pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
     <div class="apple-glass rounded-full p-1.5 flex items-center relative">
         <div id="nav-pill" class="absolute top-1.5 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none">
         </div>
@@ -248,6 +248,7 @@ const { mainMenu, contactEmail } = settings;
                 type: 'x',
                 trigger: panel,
                 lockAxis: true,
+                zIndexBoost: false, // Prevent overriding CSS z-index
                 bounds: { minX: 0, maxX: 600 }, // Allow dragging right
                 inertia: true,
                 onDragEnd: function () {
