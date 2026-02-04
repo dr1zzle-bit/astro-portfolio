@@ -222,30 +222,79 @@ if (!project) return Astro.redirect('/404');
         function initLightboxSwipe() {
             if (typeof Draggable === 'undefined') return;
 
-            // Ensure inertia is registered if available (though simple swipe doesn't strictly need it if we handle dragEnd manually)
             if (typeof InertiaPlugin !== 'undefined') gsap.registerPlugin(Draggable, InertiaPlugin);
 
-            lightboxDrag = Draggable.create(lightbox, {
-                type: 'y',
+            // Create a virtual proxy element to track drag
+            const proxy = document.createElement('div');
+
+            lightboxDrag = Draggable.create(proxy, {
                 trigger: lightbox,
-                dragResistance: 0.1,
+                type: 'x,y',
                 lockAxis: true,
                 inertia: true,
-                onDrag: function () {
-                    // Optional: Fade out based on distance?
-                    // For now, simple drag
-                },
+                onDrag: updatePositions,
+                onThrowUpdate: updatePositions,
                 onDragEnd: function () {
-                    const threshold = 150;
-                    if (Math.abs(this.y) > threshold) {
-                        // Close
-                        closeLightbox();
-                    } else {
-                        // Reset
-                        gsap.to(this.target, { y: 0, duration: 0.3, ease: 'power2.out' });
+                    const threshold = 100;
+
+                    // VERTICAL - CLOSE
+                    if (this.lockedAxis === 'y') {
+                        if (Math.abs(this.y) > threshold) {
+                            closeLightbox();
+                        } else {
+                            // Snap Back Container
+                            gsap.to(lightbox, { y: 0, duration: 0.3, ease: 'power2.out' });
+                            gsap.to(this.target, { y: 0, duration: 0.3 }); // Reset proxy
+                        }
+                    }
+
+                    // HORIZONTAL - NAVIGATE
+                    else if (this.lockedAxis === 'x') {
+                        if (this.x < -threshold) {
+                            // SWIPE LEFT -> NEXT
+                            gsap.to(lbImg, {
+                                x: -window.innerWidth,
+                                duration: 0.2,
+                                ease: 'power2.in',
+                                onComplete: () => {
+                                    nextImage();
+                                    resetProxy(this);
+                                }
+                            });
+                        } else if (this.x > threshold) {
+                            // SWIPE RIGHT -> PREV
+                            gsap.to(lbImg, {
+                                x: window.innerWidth,
+                                duration: 0.2,
+                                ease: 'power2.in',
+                                onComplete: () => {
+                                    prevImage();
+                                    resetProxy(this);
+                                }
+                            });
+                        } else {
+                            // Snap Back Image
+                            gsap.to(lbImg, { x: 0, duration: 0.3, ease: 'power2.out' });
+                            gsap.to(this.target, { x: 0, duration: 0.3 }); // Reset proxy
+                        }
                     }
                 }
             })[0];
+
+            function updatePositions() {
+                if (this.lockedAxis === 'y') {
+                    gsap.set(lightbox, { y: this.y });
+                    gsap.set(lbImg, { x: 0 });
+                } else if (this.lockedAxis === 'x') {
+                    gsap.set(lbImg, { x: this.x });
+                    gsap.set(lightbox, { y: 0 });
+                }
+            }
+
+            function resetProxy(instance) {
+                gsap.set(instance.target, { x: 0, y: 0 });
+                instance.update();
+            }
         }
 
         // Initialize on load
@@ -256,6 +305,7 @@ if (!project) return Astro.redirect('/404');
         window.openLightbox = function (index) {
             // Reset position before opening
             gsap.set(lightbox, { y: 0 });
+            gsap.set(lbImg, { x: 0 });
             originalOpenLightbox(index);
         };
     </script>
