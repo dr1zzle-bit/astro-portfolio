@@ -215,5 +215,48 @@ if (!project) return Astro.redirect('/404');
                 closeLightbox();
             }
         });
+
+        // --- SWIPE TO CLOSE (Vertical) ---
+        let lightboxDrag;
+
+        function initLightboxSwipe() {
+            if (typeof Draggable === 'undefined') return;
+
+            // Ensure inertia is registered if available (though simple swipe doesn't strictly need it if we handle dragEnd manually)
+            if (typeof InertiaPlugin !== 'undefined') gsap.registerPlugin(Draggable, InertiaPlugin);
+
+            lightboxDrag = Draggable.create(lightbox, {
+                type: 'y',
+                trigger: lightbox,
+                dragResistance: 0.1,
+                lockAxis: true,
+                inertia: true,
+                onDrag: function () {
+                    // Optional: Fade out based on distance?
+                    // For now, simple drag
+                },
+                onDragEnd: function () {
+                    const threshold = 150;
+                    if (Math.abs(this.y) > threshold) {
+                        // Close
+                        closeLightbox();
+                    } else {
+                        // Reset
+                        gsap.to(this.target, { y: 0, duration: 0.3, ease: 'power2.out' });
+                    }
+                }
+            })[0];
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initLightboxSwipe);
+
+        // Hook into open/close to reset position
+        const originalOpenLightbox = window.openLightbox;
+        window.openLightbox = function (index) {
+            // Reset position before opening
+            gsap.set(lightbox, { y: 0 });
+            originalOpenLightbox(index);
+        };
     </script>
 </Layout>
