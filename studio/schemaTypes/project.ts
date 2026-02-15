@@ -47,6 +47,7 @@ export default defineType({
             options: {
                 layout: 'grid',
             },
+            type: 'array',
             of: [
                 defineField({
                     name: 'image',
