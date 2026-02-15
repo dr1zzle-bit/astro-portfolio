@@ -21,7 +21,7 @@ const config = defineConfig({
     dataset,
     plugins: [deskTool(), visionTool(), markdownSchema()],
     schema: {
-        types: schemaTypes,
+        types: schemaTypes as any,
     },
 });
 
