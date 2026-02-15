@@ -24,6 +24,7 @@ export async function fetchProjects() {
 export async function fetchProjectBySlug(slug: string) {
   return await client.fetch(`*[_type == "project" && slug.current == $slug][0] {
         ...,
+        galleryColumns,
         mainImage {
             asset->,
             alt

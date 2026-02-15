@@ -44,7 +44,9 @@ export default defineType({
         defineField({
             name: 'gallery',
             title: 'Gallery',
-            type: 'array',
+            options: {
+                layout: 'grid',
+            },
             of: [
                 defineField({
                     name: 'image',
@@ -59,6 +61,14 @@ export default defineType({
                     ],
                 }),
             ],
+        }),
+        defineField({
+            name: 'galleryColumns',
+            title: 'Gallery Columns',
+            type: 'number',
+            description: 'Number of columns for the gallery grid (default: 3)',
+            initialValue: 3,
+            validation: (Rule) => Rule.min(1).max(5),
         }),
         defineField({
             name: 'details',
