@@ -16,6 +16,7 @@ export default defineConfig({
   integrations: [sanity(sanityConfig), react()],
 
   vite: {
+      envPrefix: ['PUBLIC_', 'SANITY_STUDIO_'],
       plugins: [tailwindcss()],
       server: {
           hmr: { path: '/vite-hmr/' },

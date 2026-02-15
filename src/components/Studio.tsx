@@ -6,8 +6,8 @@ import { Studio } from "sanity";
 import { schemaTypes } from "../../studio/schemaTypes";
 
 // Use environment variables from import.meta.env for Astro/Vite
-const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || import.meta.env.SANITY_PROJECT_ID;
-const dataset = import.meta.env.PUBLIC_SANITY_DATASET || import.meta.env.SANITY_DATASET;
+const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || import.meta.env.SANITY_STUDIO_PROJECT_ID || import.meta.env.SANITY_PROJECT_ID;
+const dataset = import.meta.env.PUBLIC_SANITY_DATASET || import.meta.env.SANITY_STUDIO_DATASET || import.meta.env.SANITY_DATASET;
 
 if (!projectId || !dataset) {
     throw new Error("Missing Sanity project ID or dataset in environment variables.");
