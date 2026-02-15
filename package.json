@@ -12,6 +12,7 @@
         "export": "node ./sanity-export/export.js"
     },
     "dependencies": {
+        "@astrojs/netlify": "^6.6.4",
         "@astrojs/react": "^4.4.2",
         "@portabletext/react": "^6.0.2",
         "@sanity/astro": "^3.1.6",
