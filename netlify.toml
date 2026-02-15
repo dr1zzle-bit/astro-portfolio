@@ -1,2 +1,7 @@
 [dev]
   targetPort = 3000
+
+[[redirects]]
+  from = "/studio/*"
+  to = "/studio/index.html"
+  status = 200
