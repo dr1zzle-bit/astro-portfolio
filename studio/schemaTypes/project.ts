@@ -76,7 +76,7 @@ export default defineType({
             title: 'SEO Title Override',
             description: 'Overrides the default title (Project Title | Site Title). Optional.',
             type: 'string',
-            group: 'seo',
+            fieldset: 'seo',
         }),
         defineField({
             name: 'seoDescription',
@@ -84,14 +84,14 @@ export default defineType({
             description: 'Overrides the short description for search engines. Optional.',
             type: 'text',
             rows: 3,
-            group: 'seo',
+            fieldset: 'seo',
         }),
         defineField({
             name: 'seoImage',
             title: 'SEO Share Image Override',
             description: 'Overrides the main image for social sharing. Optional.',
             type: 'image',
-            group: 'seo',
+            fieldset: 'seo',
             options: {
                 hotspot: true,
             },
