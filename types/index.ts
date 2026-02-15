@@ -144,6 +144,7 @@ export interface Project {
     mainImage: CustomImage;
     description: string;
     gallery?: Array<CustomImage>;
+    galleryColumns?: number;
     details?: any;
     order: number;
     seoTitle?: string;

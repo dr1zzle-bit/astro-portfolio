@@ -74,7 +74,7 @@ if (!project) return Astro.redirect('/404');
 
         {
             project.gallery && project.gallery.length > 0 && (
-                <div class="grid gap-[10px] space-y-0" style={{ gridTemplateColumns: `repeat(${project.galleryColumns || 3}, 1fr)` }}>
+                <div class="columns-1 custom-gallery gap-[10px] space-y-[10px]">
                     {project.gallery.map(
                         (image: any, index: number) =>
                             image.asset && (
@@ -94,6 +94,14 @@ if (!project) return Astro.redirect('/404');
             )
         }
     </div>
+
+    <style define:vars={{ desktopCols: project.galleryColumns || 3 }}>
+        @media (min-width: 768px) {
+            .custom-gallery {
+                column-count: var(--desktopCols);
+            }
+        }
+    </style>
 
     <!-- LIGHTBOX OVERLAY -->
     <div
