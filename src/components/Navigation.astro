@@ -52,34 +52,38 @@ const { mainMenu, contactEmail } = settings;
                 // ABOUT MODULE
                 if (module._type === 'module.about')
                     return (
-                        <div class="h-full flex flex-col md:flex-row">
-                            {module.image && (
-                                <div class="relative h-64 md:h-full md:w-1/2 bg-gray-50 overflow-hidden shrink-0">
-                                    {module.image.asset && <img src={module.image.asset.url} class="w-full h-full object-cover" alt="About" />}
-                                    <div class="absolute inset-0 bg-black/5" />
-                                </div>
-                            )}
-                            <div class="p-8 md:p-12 md:w-full overflow-y-auto no-scrollbar flex flex-col">
-                                <div class="flex justify-between items-center mb-8">
+                        <div class="h-full flex flex-col">
+                            <div class="p-8 md:p-12 md:w-full overflow-y-auto no-scrollbar flex flex-col h-full relative z-10">
+                                <div class="flex justify-between items-center mb-8 shrink-0">
                                     <span class="font-sans font-bold text-[10px] text-black/30 uppercase tracking-widest">{module.miniTitle || 'Profile'}</span>
                                     <button onclick="window.closeSheets()" class="p-2 hover:bg-muted rounded-full transition-colors">
                                         <i data-lucide="x" class="w-5 h-5 opacity-50" />
                                     </button>
                                 </div>
-                                <h2 class="text-3xl font-extrabold tracking-tighter mb-6">{module.headline || sheet.title}</h2>
-                                <div class="text-sm text-black/60 leading-relaxed mb-8 font-medium">
-                                    {module.content && <PortableText value={module.content} />}
-                                </div>
-                                {module.facts && (
-                                    <div class="space-y-4 text-xs font-bold mt-2">
-                                        {module.facts.map((fact: any) => (
-                                            <div class="flex justify-between border-b border-border pb-2">
-                                                <span class="text-black/40">{fact.label}</span>
-                                                <span>{fact.value}</span>
-                                            </div>
-                                        ))}
+
+                                {module.image && (
+                                    <div class="relative w-full aspect-[4/3] md:aspect-[3/2] bg-gray-50 overflow-hidden rounded-lg mb-8 shrink-0">
+                                        {module.image.asset && <img src={module.image.asset.url} class="w-full h-full object-cover" alt="About" />}
+                                        <div class="absolute inset-0 bg-black/5" />
                                     </div>
                                 )}
+
+                                <div class="flex-1">
+                                    <h2 class="text-3xl font-extrabold tracking-tighter mb-6">{module.headline || sheet.title}</h2>
+                                    <div class="text-sm text-black/60 leading-relaxed mb-8 font-medium">
+                                        {module.content && <PortableText value={module.content} />}
+                                    </div>
+                                    {module.facts && (
+                                        <div class="space-y-4 text-xs font-bold mt-2 border-t border-black/5 pt-8">
+                                            {module.facts.map((fact: any) => (
+                                                <div class="flex justify-between border-b border-border pb-2">
+                                                    <span class="text-black/40">{fact.label}</span>
+                                                    <span>{fact.value}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     );
