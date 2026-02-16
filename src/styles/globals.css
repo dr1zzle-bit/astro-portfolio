@@ -105,7 +105,7 @@ body {
 
 
 .sheet-floater {
-    animation: rotate-infinite 80s linear infinite;
+    animation: rotate-infinite 60s linear infinite;
     transform-origin: center center;
     opacity: 0.03;
     width: 400px;

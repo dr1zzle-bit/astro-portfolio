@@ -36,14 +36,6 @@ const projects = await fetchProjects();
                 <h1 class="text-lg md:text-xl font-extrabold tracking-tighter transition-colors">mmichelic</h1>
             </div>
         </div>
-
-        <div class="hidden md:block pointer-events-auto">
-            <div class="apple-glass p-2.5 rounded-lg">
-                <div id="dot-matrix" class="grid grid-cols-3 gap-1.5">
-                    {Array.from({ length: 9 }).map(() => <div class="w-1 h-1 rounded-full bg-gray-300 transition-all duration-300" />)}
-                </div>
-            </div>
-        </div>
     </header>
 
     <div class="fixed bottom-0 left-0 w-full h-1 bg-gray-100 z-40 pointer-events-none">
