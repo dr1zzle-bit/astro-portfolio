@@ -38,6 +38,24 @@ export default defineType({
       group: 'content',
     }),
     defineField({
+      name: 'gridScale',
+      title: 'Grid Layout Scale',
+      description: 'Scale factor for the home page grid items (e.g. 1.0 = 100%, 1.3 = 130%).',
+      type: 'number',
+      initialValue: 1.0,
+      validation: (Rule) => Rule.min(0.5).max(2.0).precision(1),
+      group: 'content',
+    }),
+    defineField({
+      name: 'gridResolution',
+      title: 'Grid Layout Resolution',
+      description: 'Multiplier for thumbnail resolution (1.0 = 400x500px). Increase for sharper images on large screens.',
+      type: 'number',
+      initialValue: 1.0,
+      validation: (Rule) => Rule.min(0.5).max(3.0).precision(1),
+      group: 'content',
+    }),
+    defineField({
       name: 'titleSuffix',
       title: 'Suffix for page titles',
       description:

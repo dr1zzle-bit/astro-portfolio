@@ -42,7 +42,23 @@ const projects = await fetchProjects();
         <div id="scroll-indicator" class="h-full bg-black absolute top-0 left-0 opacity-50 transition-opacity duration-300"></div>
     </div>
 
-    <PortfolioGrid projects={projects} />
+    <!-- Pass gridScale from fetching in Layout (which we don't have direct access to here easily without refetching or context). 
+         Wait, Layout fetches it but doesn't pass it back. 
+         Actually, we can fetch it here too, or just use the one from Layout if we change Layout to slot prop. 
+         Simplest: Fetch it here. 
+    -->
+    {
+        /* 
+           We need data here. 
+           Let's import fetchData. 
+        */
+    }
+
+    <PortfolioGrid
+        projects={projects}
+        scale={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => d?.gridScale || 1))}
+        resolution={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => d?.gridResolution || 1))}
+    />
     <Navigation />
 
     <script is:inline>

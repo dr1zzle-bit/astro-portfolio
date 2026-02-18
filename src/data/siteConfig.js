@@ -12,6 +12,8 @@ const CONFIG_QUERY_OBJ = `{
   },
   footer,
   footer,
+  gridScale,
+  gridResolution,
   titleSuffix,
   seoDescription,
   seoImage,
