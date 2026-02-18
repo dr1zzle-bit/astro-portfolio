@@ -42,6 +42,12 @@ export default defineType({
             description: 'Shown on hover in the grid',
         }),
         defineField({
+            name: 'youtubeEmbed',
+            title: 'Featured YouTube Video',
+            description: 'Full-width video displayed above the gallery. Optional.',
+            type: 'url',
+        }),
+        defineField({
             name: 'gallery',
             title: 'Gallery',
             options: {
@@ -60,6 +66,44 @@ export default defineType({
                             title: 'Alternative Text',
                         }),
                     ],
+                }),
+                defineField({
+                    name: 'video',
+                    type: 'file',
+                    title: 'Video File',
+                    options: {
+                        accept: 'video/mp4,video/webm',
+                    },
+                    fields: [
+                        defineField({
+                            name: 'alt',
+                            type: 'string',
+                            title: 'Alternative Text (Hidden)',
+                        }),
+                    ],
+                }),
+                defineField({
+                    name: 'youtube',
+                    type: 'object',
+                    title: 'YouTube Video',
+                    fields: [
+                        defineField({
+                            name: 'url',
+                            type: 'url',
+                            title: 'YouTube URL',
+                        }),
+                        defineField({
+                            name: 'caption',
+                            type: 'string',
+                            title: 'Caption',
+                        }),
+                    ],
+                    preview: {
+                        select: {
+                            title: 'caption',
+                            subtitle: 'url',
+                        },
+                    },
                 }),
             ],
         }),

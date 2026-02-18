@@ -143,9 +143,22 @@ export interface Project {
     slug: Slug;
     mainImage: CustomImage;
     description: string;
-    gallery?: Array<CustomImage>;
+    // Gallery (now mixed media)
+    gallery?: Array<{
+        _type: 'image' | 'video' | 'youtube';
+        asset?: any;
+        alt?: string;
+        url?: string; // YouTube URL
+        videoUrl?: string; // File URL
+        caption?: string;
+    }>;
     galleryColumns?: number;
-    details?: any;
+
+    // Featured Video
+    youtubeEmbed?: string;
+
+    // Content
+    details?: any; // Portable Text
     order: number;
     seoTitle?: string;
     seoDescription?: string;

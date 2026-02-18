@@ -73,23 +73,81 @@ if (!project) return Astro.redirect('/404');
         </div>
 
         {
+            project.youtubeEmbed &&
+                (() => {
+                    const ytId = project.youtubeEmbed.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?.[2];
+                    return ytId ? (
+                        <div class="w-full aspect-video rounded-xl overflow-hidden shadow-lg mb-[10px] relative z-10">
+                            <iframe
+                                src={`https://www.youtube.com/embed/${ytId}?rel=0`}
+                                title="Featured Video"
+                                class="w-full h-full"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                            />
+                        </div>
+                    ) : null;
+                })()
+        }
+
+        {
             project.gallery && project.gallery.length > 0 && (
                 <div class="columns-1 custom-gallery gap-[10px] space-y-[10px]">
-                    {project.gallery.map(
-                        (image: any, index: number) =>
-                            image.asset && (
+                    {project.gallery.map((item: any, index: number) => {
+                        const realIndex = index + 1; // +1 because mainImage is 0
+
+                        if (item._type === 'video' && item.videoUrl) {
+                            return (
+                                <div
+                                    class="break-inside-avoid rounded-lg overflow-hidden shadow-sm group relative cursor-pointer"
+                                    onclick={`openLightbox(${realIndex})`}
+                                >
+                                    <video src={item.videoUrl} muted loop autoplay playsinline class="w-full h-auto object-cover pointer-events-none" />
+                                    <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                        <div class="bg-white/90 rounded-full p-2 backdrop-blur-sm">
+                                            <i data-lucide="play" class="w-4 h-4 text-black fill-black" />
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        if (item._type === 'youtube' && item.url) {
+                            const ytId = item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?.[2];
+                            if (!ytId) return null;
+                            const thumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+
+                            return (
+                                <div
+                                    class="break-inside-avoid rounded-lg overflow-hidden shadow-sm group relative cursor-pointer"
+                                    onclick={`openLightbox(${realIndex})`}
+                                >
+                                    <img src={thumb} alt={item.caption || 'YouTube Video'} class="w-full h-auto object-cover" loading="lazy" />
+                                    <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                        <div class="bg-white/90 rounded-full p-3 backdrop-blur-sm shadow-xl">
+                                            <i data-lucide="youtube" class="w-6 h-6 text-red-600" />
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        // Default: Image
+                        return (
+                            item.asset && (
                                 <div class="break-inside-avoid rounded-lg overflow-hidden shadow-sm group">
                                     <img
-                                        src={urlFor(image).width(800).format('webp').url()}
-                                        alt={image.alt || ''}
-                                        data-index={index + 1}
+                                        src={urlFor(item).width(800).format('webp').url()}
+                                        alt={item.alt || ''}
+                                        data-index={realIndex}
                                         class="w-full h-auto object-cover hover:scale-[1.02] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out cursor-zoom-in gallery-img will-change-transform"
                                         loading="lazy"
-                                        onclick={`openLightbox(${index + 1})`}
+                                        onclick={`openLightbox(${realIndex})`}
                                     />
                                 </div>
                             )
-                    )}
+                        );
+                    })}
                 </div>
             )
         }
@@ -121,8 +179,10 @@ if (!project) return Astro.redirect('/404');
         </button>
 
         <div class="relative w-full h-full flex items-center justify-center p-4 md:p-20">
-            <img id="lightbox-img" src="" class="max-w-full max-h-full object-contain shadow-2xl rounded-sm" />
-            <div id="lightbox-loader" class="absolute inset-0 flex items-center justify-center">
+            <div id="lightbox-content" class="w-full h-full flex items-center justify-center">
+                <!-- Content injected via JS -->
+            </div>
+            <div id="lightbox-loader" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden">
                 <div class="w-8 h-8 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
             </div>
         </div>
@@ -140,16 +200,27 @@ if (!project) return Astro.redirect('/404');
             allImages: [
                 project.mainImage
                     ? {
+                          type: 'image',
                           thumb: urlFor(project.mainImage).width(1200).format('webp').url(),
-                          full: urlFor(project.mainImage).width(1800).format('webp').url(),
+                          full: urlFor(project.mainImage.asset).width(1800).format('webp').url(),
                           alt: project.mainImage.alt || project.title
                       }
                     : null,
-                ...(project.gallery || []).map((img) => ({
-                    thumb: urlFor(img).width(800).format('webp').url(),
-                    full: urlFor(img).width(1800).format('webp').url(),
-                    alt: img.alt || ''
-                }))
+                ...(project.gallery || []).map((item) => {
+                    if (item._type === 'video' && item.videoUrl) {
+                        return { type: 'video', src: item.videoUrl, alt: item.alt };
+                    }
+                    if (item._type === 'youtube' && item.url) {
+                        const ytId = item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?.[2];
+                        return { type: 'youtube', id: ytId, caption: item.caption };
+                    }
+                    return {
+                        type: 'image',
+                        thumb: urlFor(item).width(800).format('webp').url(),
+                        full: urlFor(item.asset).width(1800).format('webp').url(),
+                        alt: item.alt || ''
+                    };
+                })
             ].filter(Boolean)
         }}
     >
@@ -157,13 +228,14 @@ if (!project) return Astro.redirect('/404');
 
         // LIGHTBOX LOGIC
         const lightbox = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lightbox-img');
+        const lbContent = document.getElementById('lightbox-content');
         const lbLoader = document.getElementById('lightbox-loader');
         const lbCurrent = document.getElementById('lb-current');
         const lbTotal = document.getElementById('lb-total');
 
         let currentIndex = 0;
         const totalImages = allImages.length;
+        let lightboxDrag; // Declare globally for cleanup
 
         // Initialize Total
         if (lbTotal) lbTotal.innerText = totalImages;
@@ -175,14 +247,16 @@ if (!project) return Astro.redirect('/404');
 
             lightbox.classList.remove('pointer-events-none', 'opacity-0');
             document.body.style.overflow = 'hidden'; // Lock Scroll
-
-            // GSAP Entrance
-            gsap.fromTo(lbImg, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' });
         };
 
         window.closeLightbox = function () {
             lightbox.classList.add('opacity-0', 'pointer-events-none');
             document.body.style.overflow = ''; // Unlock Scroll
+
+            // Cleanup Content (Stop videos)
+            setTimeout(() => {
+                lbContent.innerHTML = '';
+            }, 300);
         };
 
         window.nextImage = function (e) {
@@ -201,23 +275,46 @@ if (!project) return Astro.redirect('/404');
             const data = allImages[currentIndex];
             if (!data) return;
 
-            // Show Loader
+            // Clear previous
+            lbContent.innerHTML = '';
             lbLoader.classList.remove('hidden');
-            if (!firstOpen) {
-                gsap.to(lbImg, { opacity: 0.5, duration: 0.2 });
-            }
 
-            // Load Image
-            const img = new Image();
-            img.onload = () => {
-                lbImg.src = data.full;
+            const onLoaded = () => {
                 lbLoader.classList.add('hidden');
-                gsap.to(lbImg, { opacity: 1, duration: 0.3 });
+                gsap.fromTo(lbContent.firstChild, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.3 });
             };
-            img.src = data.full;
+
+            if (data.type === 'image') {
+                const img = document.createElement('img');
+                img.src = data.full;
+                img.alt = data.alt;
+                img.className = 'max-w-full max-h-full object-contain shadow-2xl rounded-sm select-none';
+                img.onload = onLoaded;
+                lbContent.appendChild(img);
+            } else if (data.type === 'video') {
+                const video = document.createElement('video');
+                video.src = data.src;
+                video.controls = true;
+                video.autoplay = true;
+                video.className = 'max-w-full max-h-full object-contain shadow-2xl rounded-sm outline-none';
+                video.onloadeddata = onLoaded;
+                lbContent.appendChild(video);
+            } else if (data.type === 'youtube' && data.id) {
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${data.id}?autoplay=1&rel=0`;
+                iframe.className = 'w-full max-w-4xl aspect-video rounded-lg shadow-2xl';
+                iframe.allow = 'autoplay; encrypted-media';
+                iframe.onload = onLoaded;
+                lbContent.appendChild(iframe);
+            }
 
             // Update Counter
             lbCurrent.innerText = currentIndex + 1;
+
+            // Re-bind swipe since content changed (actually we bind swipe to container, but proxy might need reset)
+            if (lightboxDrag && lightboxDrag[0]) {
+                gsap.set(lightboxDrag[0].target, { x: 0, y: 0 });
+            }
         }
 
         // Keyboard Nav
@@ -230,82 +327,70 @@ if (!project) return Astro.redirect('/404');
 
         // Background Click Close
         lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox || e.target.parentElement === lightbox) {
+            if (e.target === lightbox || e.target.parentElement === lightbox || e.target === lbContent) {
                 closeLightbox();
             }
         });
 
         // --- SWIPE TO NAVIGATE (Horizontal Only) ---
-        let lightboxDrag;
-
         function initLightboxSwipe() {
             if (typeof Draggable === 'undefined') return;
-
             if (typeof InertiaPlugin !== 'undefined') gsap.registerPlugin(Draggable, InertiaPlugin);
 
-            // Create a virtual proxy element to track drag
             const proxy = document.createElement('div');
 
             lightboxDrag = Draggable.create(proxy, {
                 trigger: lightbox,
-                type: 'x', // Horizontal only
+                type: 'x',
                 inertia: true,
+                dragResistance: 0.3,
+                onDragStart: function () {
+                    // Disable for interactive elements like video controls
+                    // Actually difficult to target specific children here, but trigger is lightbox wrapper
+                },
                 onDrag: updatePositions,
                 onThrowUpdate: updatePositions,
                 onDragEnd: function () {
                     const threshold = 100;
-
-                    // HORIZONTAL - NAVIGATE
                     if (this.x < -threshold) {
-                        // SWIPE LEFT -> NEXT
-                        gsap.to(lbImg, {
-                            x: -window.innerWidth,
+                        gsap.to(lbContent, {
+                            x: -50,
+                            opacity: 0,
                             duration: 0.2,
-                            ease: 'power2.in',
                             onComplete: () => {
                                 nextImage();
                                 resetProxy(this);
                             }
                         });
                     } else if (this.x > threshold) {
-                        // SWIPE RIGHT -> PREV
-                        gsap.to(lbImg, {
-                            x: window.innerWidth,
+                        gsap.to(lbContent, {
+                            x: 50,
+                            opacity: 0,
                             duration: 0.2,
-                            ease: 'power2.in',
                             onComplete: () => {
                                 prevImage();
                                 resetProxy(this);
                             }
                         });
                     } else {
-                        // Snap Back Image
-                        gsap.to(lbImg, { x: 0, duration: 0.3, ease: 'power2.out' });
-                        gsap.to(this.target, { x: 0, duration: 0.3 }); // Reset proxy
+                        // Snap Back
+                        gsap.to(lbContent, { x: 0, opacity: 1, duration: 0.3 });
+                        resetProxy(this);
                     }
                 }
-            })[0];
+            });
 
             function updatePositions() {
-                gsap.set(lbImg, { x: this.x });
+                gsap.set(lbContent, { x: this.x });
             }
 
             function resetProxy(instance) {
                 gsap.set(instance.target, { x: 0, y: 0 });
-                gsap.set(lbImg, { x: 0 }); // Fix: Explicitly reset image position
+                gsap.set(lbContent, { x: 0, opacity: 1 });
                 instance.update();
             }
         }
 
-        // Initialize on load
         window.addEventListener('load', initLightboxSwipe);
-
-        // Hook into open/close to reset position
-        const originalOpenLightbox = window.openLightbox;
-        window.openLightbox = function (index) {
-            // Reset position before opening
-            gsap.set(lbImg, { x: 0 }); // Only reset image X
-            originalOpenLightbox(index);
-        };
     </script>
 </Layout>

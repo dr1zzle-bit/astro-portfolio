@@ -6,12 +6,20 @@ const PROJECT_QUERY = `*[_type == "project"] | order(order asc) {
   slug,
   mainImage {
     asset->,
-    alt
+    alt,
+    crop,
+    hotspot
   },
   description,
   gallery[] {
+    _type,
     asset->,
-    alt
+    alt,
+    url, 
+    caption,
+    "videoUrl": asset->url,
+    crop,
+    hotspot
   },
   details,
   order
@@ -27,17 +35,28 @@ export async function fetchProjectBySlug(slug: string) {
         galleryColumns,
         mainImage {
             asset->,
-            alt
+            alt,
+            crop,
+            hotspot
         },
         gallery[] {
+            _type,
             asset->,
-            alt
+            alt,
+            url,
+            caption,
+            "videoUrl": asset->url,
+            crop,
+            hotspot
         },
+        youtubeEmbed,
         seoTitle,
         seoDescription,
         seoImage {
             asset->,
-            alt
+            alt,
+            crop,
+            hotspot
         }
     }`, { slug });
 }
