@@ -47,6 +47,15 @@ export default defineType({
       group: 'content',
     }),
     defineField({
+      name: 'gridScaleMobile',
+      title: 'Mobile Grid Layout Scale',
+      description: 'Scale factor for grid items on mobile devices (<768px).',
+      type: 'number',
+      initialValue: 1.0,
+      validation: (Rule) => Rule.min(0.5).max(2.0).precision(1),
+      group: 'content',
+    }),
+    defineField({
       name: 'gridResolution',
       title: 'Grid Layout Resolution',
       description: 'Multiplier for thumbnail resolution (1.0 = 400x500px). Increase for sharper images on large screens.',

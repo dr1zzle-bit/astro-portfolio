@@ -12,6 +12,14 @@ const projects = await fetchProjects();
         body {
             overflow: hidden;
         }
+        /* Mobile Header Animation Trigger */
+        :global(.group.is-animating) svg {
+            transform: rotate(90deg) !important;
+        }
+        :global(.group.is-animating) .apple-glass {
+            transform: scale(1.02);
+            color: black;
+        }
     </style>
     <!-- SPLASH SCREEN -->
     <div id="intro-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center pointer-events-none">
@@ -20,7 +28,7 @@ const projects = await fetchProjects();
 
     <!-- Header / Logo Overlay -->
     <header class="fixed top-0 left-0 w-full z-40 p-8 flex justify-between items-start pointer-events-none">
-        <div class="pointer-events-auto cursor-pointer group" onclick="if(window.closeSheets) window.closeSheets()">
+        <div id="header-logo-group" class="pointer-events-auto cursor-pointer group" onclick="if(window.closeSheets) window.closeSheets()">
             <div
                 class="apple-glass rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-300 hover:scale-[1.02] text-black/60 group-hover:text-black"
             >
@@ -57,6 +65,7 @@ const projects = await fetchProjects();
     <PortfolioGrid
         projects={projects}
         scale={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => d?.gridScale || 1))}
+        mobileScale={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => d?.gridScaleMobile || 1))}
         resolution={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => d?.gridResolution || 1))}
     />
     <Navigation />
@@ -75,5 +84,22 @@ const projects = await fetchProjects();
         // Ideally, PortfolioGrid should handle this update.
         // Since PortfolioGrid script runs independently, we need to pass the matrix container ID.
         // It's already doing: document.getElementById('dot-matrix');
+
+        // Header Logo Animation (Mobile Tap)
+        const logoGroup = document.getElementById('header-logo-group');
+        let isAnimating = false;
+
+        if (logoGroup) {
+            logoGroup.addEventListener('click', () => {
+                if (isAnimating) return;
+                isAnimating = true;
+                logoGroup.classList.add('is-animating');
+
+                setTimeout(() => {
+                    logoGroup.classList.remove('is-animating');
+                    isAnimating = false;
+                }, 500); // 500ms matches CSS transition duration
+            });
+        }
     </script>
 </Layout>

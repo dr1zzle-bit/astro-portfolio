@@ -5,10 +5,11 @@ import { urlFor } from '../utils/sanity-client';
 interface Props {
     projects: Project[];
     scale?: number;
+    mobileScale?: number;
     resolution?: number;
 }
 
-const { projects, scale = 1, resolution = 1 } = Astro.props;
+const { projects, scale = 1, mobileScale = 1, resolution = 1 } = Astro.props;
 
 // Replicate grid logic parameters for SSR
 const rows = 10;
@@ -38,7 +39,7 @@ const cols = gridItems.length / rows;
 const baseItemWidth = 240;
 const baseItemHeight = 300;
 
-// Apply Scale
+// SSR initial style (Desktop default)
 const itemWidth = baseItemWidth * scale;
 const itemHeight = baseItemHeight * scale;
 
@@ -67,9 +68,9 @@ const verticalOffset = 40;
                 return (
                     <div
                         class="grid-item absolute will-change-transform flex items-center justify-center pointer-events-auto"
-                        style={`width: ${itemWidth}px; height: ${itemHeight}px;`}
-                        data-bx={bx}
-                        data-by={by}
+                        style={`width: ${itemWidth}px; height: ${itemHeight}px; left: 0; top: 0;`}
+                        data-col={colIndex}
+                        data-row={rowIndex}
                         onclick={`handleGridClick(event, '${project.slug.current}')`}
                     >
                         <div class="grid-img-container w-full h-full relative rounded-sm shadow-sm group cursor-pointer overflow-hidden">
@@ -93,13 +94,53 @@ const verticalOffset = 40;
     </div>
 </div>
 
-<script define:vars={{ cols, rows, itemWidth, itemHeight, gap, verticalOffset, totalWidth: cols * (itemWidth + gap), totalHeight: rows * (itemHeight + gap) }}>
+<script define:vars={{ cols, rows, scale, mobileScale, gap, verticalOffset }}>
     const gridLayer = document.getElementById('grid-layer');
+    const baseItemWidth = 240;
+    const baseItemHeight = 300;
+
+    // --- RESPONSIVE STATE ---
+    let currentItemWidth = baseItemWidth * scale;
+    let currentItemHeight = baseItemHeight * scale;
+    let totalWidth = cols * (currentItemWidth + gap);
+    let totalHeight = rows * (currentItemHeight + gap);
+
+    // Initialize Items with Row/Col data
     const items = Array.from(document.querySelectorAll('.grid-item')).map((el) => ({
         el,
-        baseX: parseFloat(el.getAttribute('data-bx')),
-        baseY: parseFloat(el.getAttribute('data-by'))
+        colIndex: parseInt(el.getAttribute('data-col')),
+        rowIndex: parseInt(el.getAttribute('data-row')),
+        baseX: 0,
+        baseY: 0
     }));
+
+    function updateGridDimensions() {
+        const isMobile = window.innerWidth < 768;
+        const currentScale = isMobile ? mobileScale : scale;
+
+        currentItemWidth = baseItemWidth * currentScale;
+        currentItemHeight = baseItemHeight * currentScale;
+
+        totalWidth = cols * (currentItemWidth + gap);
+        totalHeight = rows * (currentItemHeight + gap);
+
+        // Recalculate positions
+        items.forEach((item) => {
+            const offsetY = item.colIndex % 2 !== 0 ? verticalOffset : 0;
+            item.baseX = item.colIndex * (currentItemWidth + gap);
+            item.baseY = item.rowIndex * (currentItemHeight + gap) + offsetY;
+
+            // Update DOM dimensions
+            item.el.style.width = `${currentItemWidth}px`;
+            item.el.style.height = `${currentItemHeight}px`;
+        });
+    }
+
+    // Initial calculation
+    updateGridDimensions();
+
+    // Update on resize
+    window.addEventListener('resize', updateGridDimensions);
 
     // --- SCALE / ZOOM VARIABLES ---
     let currentScale = 1;
@@ -229,18 +270,22 @@ const verticalOffset = 40;
                 let dy = (item.baseY + yPos) % totalH;
                 const buffer = 400;
 
-                if (dx < -(itemWidth + buffer)) dx += totalWidth;
-                if (dx > totalWidth - (itemWidth + buffer)) dx -= totalWidth;
+                // Use current dimensions for buffer calculation
+                const w = currentItemWidth;
+                const h = currentItemHeight;
 
-                if (dx < -(itemHeight + buffer)) dy += totalHeight;
-                if (dy > totalH - (itemHeight + buffer)) dy -= totalH;
+                if (dx < -(w + buffer)) dx += totalW;
+                if (dx > totalW - (w + buffer)) dx -= totalW;
+
+                if (dy < -(h + buffer)) dy += totalH;
+                if (dy > totalH - (h + buffer)) dy -= totalH;
 
                 dx -= totalW / 2;
                 dy -= totalH / 2;
 
-                if (dx < -totalWidth / 2) dx += totalWidth;
-                if (dx > totalWidth / 2) dx -= totalWidth;
-                if (dy < -totalHeight / 2) dy += totalHeight;
+                if (dx < -totalW / 2) dx += totalW;
+                if (dx > totalW / 2) dx -= totalW;
+                if (dy < -totalH / 2) dy += totalH;
                 if (dy > totalH / 2) dy -= totalH;
 
                 dx += window.innerWidth / 2;
@@ -271,7 +316,7 @@ const verticalOffset = 40;
         );
     } else {
         // Fallback if Draggable missing
-        render();
+        // render(); // Deleted old render, physicsRender covers it
     }
 
     // --- PINCH ZOOM EVENTS ---
