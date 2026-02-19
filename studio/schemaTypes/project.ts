@@ -32,6 +32,13 @@ export default defineType({
                     type: 'string',
                     title: 'Alternative Text',
                 }),
+                defineField({
+                    name: 'useCrop',
+                    title: 'Use Crop in Lightbox',
+                    type: 'boolean',
+                    description: 'If checked, the lightbox will use the cropped version. If unchecked, it shows the full uncropped image.',
+                    initialValue: false,
+                }),
             ],
         }),
         defineField({
@@ -64,6 +71,13 @@ export default defineType({
                             name: 'alt',
                             type: 'string',
                             title: 'Alternative Text',
+                        }),
+                        defineField({
+                            name: 'useCrop',
+                            title: 'Use Crop in Lightbox',
+                            type: 'boolean',
+                            description: 'If checked, the lightbox will use the cropped version. If unchecked, it shows the full uncropped image.',
+                            initialValue: false,
                         }),
                     ],
                 }),

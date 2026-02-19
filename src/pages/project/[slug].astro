@@ -202,7 +202,9 @@ if (!project) return Astro.redirect('/404');
                     ? {
                           type: 'image',
                           thumb: urlFor(project.mainImage).width(1200).format('webp').url(),
-                          full: urlFor(project.mainImage.asset).width(1800).format('webp').url(),
+                          full: project.mainImage.useCrop
+                              ? urlFor(project.mainImage).width(1800).format('webp').url()
+                              : urlFor(project.mainImage.asset).width(1800).format('webp').url(),
                           alt: project.mainImage.alt || project.title
                       }
                     : null,
@@ -217,7 +219,7 @@ if (!project) return Astro.redirect('/404');
                     return {
                         type: 'image',
                         thumb: urlFor(item).width(800).format('webp').url(),
-                        full: urlFor(item.asset).width(1800).format('webp').url(),
+                        full: item.useCrop ? urlFor(item).width(1800).format('webp').url() : urlFor(item.asset).width(1800).format('webp').url(),
                         alt: item.alt || ''
                     };
                 })

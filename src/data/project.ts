@@ -37,7 +37,8 @@ export async function fetchProjectBySlug(slug: string) {
             asset->,
             alt,
             crop,
-            hotspot
+            hotspot,
+            useCrop
         },
         gallery[] {
             _type,
@@ -47,7 +48,8 @@ export async function fetchProjectBySlug(slug: string) {
             caption,
             "videoUrl": asset->url,
             crop,
-            hotspot
+            hotspot,
+            useCrop
         },
         youtubeEmbed,
         seoTitle,
