@@ -12,7 +12,12 @@ const SETTINGS_QUERY = `*[_type == "siteSettings"][0] {
         ...,
         content[],
         facts[],
-        image { asset-> }
+        image { asset-> },
+        actionButton {
+          label,
+          "fileUrl": file.asset->url,
+          url
+        }
       },
       _type == 'module.services' => {
         ...,
@@ -24,8 +29,7 @@ const SETTINGS_QUERY = `*[_type == "siteSettings"][0] {
         }
       },
       _type == 'module.contact' => {
-        ...,
-        introText[]
+        ...
       },
       _type == 'module.text' => {
         ...,

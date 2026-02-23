@@ -42,5 +42,15 @@ export default defineType({
                 },
             ],
         }),
+        defineField({
+            name: 'actionButton',
+            title: 'Action Button',
+            type: 'object',
+            fields: [
+                defineField({ name: 'label', type: 'string', title: 'Label' }),
+                defineField({ name: 'file', type: 'file', title: 'File Download' }),
+                defineField({ name: 'url', type: 'url', title: 'External URL' }),
+            ],
+        }),
     ],
 })

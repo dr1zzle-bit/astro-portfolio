@@ -12,11 +12,18 @@ export default defineType({
             description: 'Small text above content e.g. "03 / Contact"',
         }),
         defineField({
-            name: 'introText',
-            title: 'Intro Text',
-            type: 'array',
-            of: [{ type: 'block' }],
+            name: 'heading',
+            title: 'Heading',
+            type: 'string',
+            description: 'Main heading e.g. "Let\'s create something together."',
         }),
+        defineField({
+            name: 'subtitle',
+            title: 'Subtitle',
+            type: 'string',
+            description: 'Short description below the heading',
+        }),
+
         defineField({
             name: 'formName',
             title: 'Netlify Form Name',

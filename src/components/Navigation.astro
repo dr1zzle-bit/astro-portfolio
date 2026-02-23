@@ -40,7 +40,7 @@ const { mainMenu, contactEmail } = settings;
     mainMenu?.map((sheet) => (
         <div
             id={`sheet-${sheet.slug.current}`}
-            class="sheet-panel fixed inset-y-0 right-0 w-full md:w-[600px] bg-white border-l border-black/5 z-[60] shadow-2xl p-0 flex flex-col translate-x-full overflow-hidden"
+            class="sheet-panel fixed inset-y-0 right-0 w-full md:w-[600px] bg-[#F5F5F7] border-l border-black/5 z-[60] shadow-2xl p-0 flex flex-col translate-x-full overflow-hidden"
         >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" class="sheet-floater" data-astro-cid-j7pv25f6="">
                 <path
@@ -53,36 +53,64 @@ const { mainMenu, contactEmail } = settings;
                 if (module._type === 'module.about')
                     return (
                         <div class="h-full flex flex-col">
-                            <div class="p-8 md:p-12 md:w-full overflow-y-auto no-scrollbar flex flex-col h-full relative z-10">
-                                <div class="flex justify-between items-center mb-8 shrink-0">
-                                    <span class="font-sans font-bold text-[10px] text-black/30 uppercase tracking-widest">{module.miniTitle || 'Profile'}</span>
-                                    <button onclick="window.closeSheets()" class="p-2 hover:bg-muted rounded-full transition-colors">
-                                        <i data-lucide="x" class="w-5 h-5 opacity-50" />
-                                    </button>
-                                </div>
-
-                                {module.image && (
-                                    <div class="relative w-full aspect-[4/3] md:aspect-[3/2] bg-gray-50 overflow-hidden rounded-lg mb-8 shrink-0">
-                                        {module.image.asset && <img src={module.image.asset.url} class="w-full h-full object-cover" alt="About" />}
-                                        <div class="absolute inset-0 bg-black/5" />
+                            <div class="p-6 md:p-8 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
+                                    <div class="flex justify-between items-center mb-10">
+                                        <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                            <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">{module.miniTitle || 'Profile'}</span>
+                                        </div>
+                                        <button
+                                            onclick="window.closeSheets()"
+                                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+                                        >
+                                            <i data-lucide="x" class="w-4 h-4" />
+                                        </button>
                                     </div>
-                                )}
 
-                                <div class="flex-1">
-                                    <h2 class="text-3xl font-extrabold tracking-tighter mb-6">{module.headline || sheet.title}</h2>
-                                    <div class="text-sm text-black/60 leading-relaxed mb-8 font-medium">
-                                        {module.content && <PortableText value={module.content} />}
-                                    </div>
-                                    {module.facts && (
-                                        <div class="space-y-4 text-xs font-bold mt-2 border-t border-black/5 pt-8">
-                                            {module.facts.map((fact: any) => (
-                                                <div class="flex justify-between border-b border-border pb-2">
-                                                    <span class="text-black/40">{fact.label}</span>
-                                                    <span>{fact.value}</span>
-                                                </div>
-                                            ))}
+                                    {module.image && (
+                                        <div class="relative w-full aspect-[4/3] md:aspect-[3/2] bg-gray-100 overflow-hidden rounded-2xl mb-10 shrink-0 group">
+                                            {module.image.asset && (
+                                                <img
+                                                    src={module.image.asset.url}
+                                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-105"
+                                                    alt="About"
+                                                />
+                                            )}
                                         </div>
                                     )}
+
+                                    <div class="flex-1">
+                                        <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.headline || sheet.title}</h1>
+                                        <div class="text-[15px] leading-relaxed text-gray-500 font-medium mb-10">
+                                            {module.content && <PortableText value={module.content} />}
+                                        </div>
+                                        {module.facts && (
+                                            <div class="space-y-4 border-t border-gray-100 pt-8 mb-10">
+                                                {module.facts.map((fact: any) => (
+                                                    <div class="flex justify-between items-center text-sm group cursor-default">
+                                                        <span class="text-gray-400 font-medium w-24 group-hover:text-gray-600 transition-colors">
+                                                            {fact.label}
+                                                        </span>
+                                                        <span class="text-[#1d1d1f] font-semibold text-right">{fact.value}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {module.actionButton && (module.actionButton.fileUrl || module.actionButton.url) && (
+                                            <a
+                                                href={module.actionButton.fileUrl || module.actionButton.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="w-full bg-[#F5F5F7] hover:bg-[#E8E8ED] text-[#1d1d1f] rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300"
+                                            >
+                                                <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-sm text-gray-400 group-hover:text-black transition-colors">
+                                                    <i data-lucide="arrow-down" class="w-5 h-5" />
+                                                </div>
+                                                <span class="font-semibold text-sm">{module.actionButton.label}</span>
+                                                <div class="w-4" />
+                                            </a>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -91,41 +119,49 @@ const { mainMenu, contactEmail } = settings;
                 // SERVICES MODULE
                 if (module._type === 'module.services')
                     return (
-                        <div class="p-8 md:p-12 h-full flex flex-col relative z-10">
-                            <div class="flex justify-between items-center mb-8 shrink-0">
-                                <span class="font-sans font-bold text-[10px] text-black/30 uppercase tracking-widest">{module.miniTitle || sheet.title}</span>
-                                <button onclick="window.closeSheets()" class="p-2 hover:bg-muted rounded-full transition-colors">
-                                    <i data-lucide="x" class="w-5 h-5 opacity-50" />
-                                </button>
-                            </div>
-                            <div class="overflow-y-auto no-scrollbar h-full">
-                                <div class="space-y-3 font-sans pb-8">
-                                    {module.services?.map((service: any) => (
-                                        <div class="group border border-border rounded-lg p-6 hover:border-black/30 transition-all cursor-default bg-white hover:bg-muted/30">
-                                            <div class="flex justify-between items-start mb-3">
-                                                <h3 class="font-bold text-lg tracking-tight">{service.title}</h3>
-                                                <i
-                                                    data-lucide={service.icon || 'star'}
-                                                    class="w-4 h-4 text-black/20 group-hover:text-black transition-colors"
-                                                />
-                                            </div>
-                                            <p class="text-sm text-black/50 leading-relaxed font-medium">{service.description}</p>
-                                        </div>
-                                    ))}
+                        <div class="p-6 md:p-8 h-full flex flex-col relative z-10">
+                            <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)] flex flex-col h-full overflow-hidden">
+                                <div class="flex justify-between items-center mb-10 shrink-0">
+                                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                        <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">{module.miniTitle || sheet.title}</span>
+                                    </div>
+                                    <button
+                                        onclick="window.closeSheets()"
+                                        class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+                                    >
+                                        <i data-lucide="x" class="w-4 h-4" />
+                                    </button>
                                 </div>
-                                {module.actionButton && (module.actionButton.fileUrl || module.actionButton.url) && (
-                                    <div class="mt-auto pt-4 pb-8">
+                                <div class="overflow-y-auto hide-scrollbar flex-1">
+                                    <div class="flex flex-col gap-4 font-sans">
+                                        {module.services?.map((service: any) => (
+                                            <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
+                                                <div class="flex justify-between items-start mb-3">
+                                                    <h3 class="font-bold text-[#1d1d1f]">{service.title}</h3>
+                                                    <i
+                                                        data-lucide={service.icon || 'star'}
+                                                        class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors"
+                                                    />
+                                                </div>
+                                                <p class="text-xs text-gray-500 leading-relaxed font-medium">{service.description}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {module.actionButton && (module.actionButton.fileUrl || module.actionButton.url) && (
                                         <a
                                             href={module.actionButton.fileUrl || module.actionButton.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            class="inline-flex items-center justify-between w-full px-6 py-4 bg-[#f5f5f7] hover:bg-[#e8e8ed] rounded-lg transition-colors group"
+                                            class="w-full mt-8 bg-[#1d1d1f] hover:bg-black text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20"
                                         >
-                                            <span class="font-medium text-sm text-black">{module.actionButton.label}</span>
-                                            <i data-lucide="arrow-down-to-line" class="w-4 h-4 text-black/40 group-hover:text-black transition-colors" />
+                                            <div class="bg-white/10 rounded-full w-12 h-12 flex items-center justify-center text-white">
+                                                <i data-lucide="download" class="w-5 h-5" />
+                                            </div>
+                                            <span class="font-semibold text-sm">{module.actionButton.label}</span>
+                                            <div class="w-4" />
                                         </a>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </div>
                     );
@@ -133,89 +169,102 @@ const { mainMenu, contactEmail } = settings;
                 // CONTACT MODULE
                 if (module._type === 'module.contact')
                     return (
-                        <div class="p-8 md:p-12 h-full flex flex-col relative z-10">
-                            <div class="flex justify-between items-center mb-10">
-                                <span class="font-sans font-bold text-[10px] text-black/30 uppercase tracking-widest">{module.miniTitle || sheet.title}</span>
-                                <button onclick="window.closeSheets()" class="p-2 hover:bg-muted rounded-full transition-colors">
-                                    <i data-lucide="x" class="w-5 h-5 opacity-50" />
-                                </button>
+                        <div class="p-6 md:p-8 h-full flex flex-col relative z-10">
+                            <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)] flex flex-col h-full overflow-hidden">
+                                <div class="flex justify-between items-center mb-10 shrink-0">
+                                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                        <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">{module.miniTitle || sheet.title}</span>
+                                    </div>
+                                    <button
+                                        onclick="window.closeSheets()"
+                                        class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+                                    >
+                                        <i data-lucide="x" class="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <div class="mb-10 overflow-y-auto hide-scrollbar flex-1">
+                                    <div class="mb-10">
+                                        <h1 class="text-2xl font-bold tracking-tight text-[#1d1d1f]">{module.heading || "Let's create something together."}</h1>
+                                        {module.subtitle && <p class="text-gray-500 mt-2 text-sm font-medium">{module.subtitle}</p>}
+                                    </div>
+                                    <form
+                                        id={module.formName || 'contact'}
+                                        class="space-y-5"
+                                        onsubmit="window.submitContact(event)"
+                                        name={module.formName || 'contact'}
+                                        data-netlify="true"
+                                        netlify-honeypot="bot-field"
+                                    >
+                                        <input type="hidden" name="form-name" value={module.formName || 'contact'} />
+                                        <p class="hidden">
+                                            <label>
+                                                Don't fill this out if you're human: <input name="bot-field" />
+                                            </label>
+                                        </p>
+                                        <div>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                required
+                                                class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] placeholder-gray-400 outline-none transition-all duration-300 font-medium"
+                                                placeholder="Your Name"
+                                            />
+                                        </div>
+                                        <div>
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                required
+                                                class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] placeholder-gray-400 outline-none transition-all duration-300 font-medium"
+                                                placeholder="Email Address"
+                                            />
+                                        </div>
+                                        <div>
+                                            <textarea
+                                                name="message"
+                                                required
+                                                rows="4"
+                                                class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] placeholder-gray-400 outline-none transition-all duration-300 resize-none font-medium"
+                                                placeholder="Project Details..."
+                                            />
+                                        </div>
+                                        <button
+                                            id="submitBtn"
+                                            type="submit"
+                                            class="w-full mt-4 bg-[#1d1d1f] hover:bg-black text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20"
+                                        >
+                                            <div class="bg-white/20 rounded-full w-12 h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                                <i data-lucide="send" class="w-5 h-5" />
+                                            </div>
+                                            <span class="font-semibold text-sm">Send Message</span>
+                                            <div class="w-4" />
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="mb-8 text-sm text-black/60 font-medium">{module.introText && <PortableText value={module.introText} />}</div>
-                            <form
-                                id={module.formName || 'contact'}
-                                class="space-y-8 flex-1"
-                                onsubmit="window.submitContact(event)"
-                                name={module.formName || 'contact'}
-                                data-netlify="true"
-                                netlify-honeypot="bot-field"
-                            >
-                                <input type="hidden" name="form-name" value={module.formName || 'contact'} />
-                                <p class="hidden">
-                                    <label>
-                                        Don't fill this out if you're human: <input name="bot-field" />
-                                    </label>
-                                </p>
-                                <div class="space-y-2 group">
-                                    <label class="text-[10px] font-medium text-black/50 uppercase tracking-widest group-focus-within:text-black transition-colors">
-                                        Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        required
-                                        class="w-full bg-transparent border-b border-border py-2 text-base font-medium text-black/80 focus:outline-none focus:border-black transition-colors placeholder:text-black/10"
-                                        placeholder="Your Name"
-                                    />
-                                </div>
-                                <div class="space-y-2 group">
-                                    <label class="text-[10px] font-medium text-black/50 uppercase tracking-widest group-focus-within:text-black transition-colors">
-                                        Email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        required
-                                        class="w-full bg-transparent border-b border-border py-2 text-base font-medium text-black/80 focus:outline-none focus:border-black transition-colors placeholder:text-black/10"
-                                        placeholder="email@address.com"
-                                    />
-                                </div>
-                                <div class="space-y-2 group">
-                                    <label class="text-[10px] font-medium text-black/50 uppercase tracking-widest group-focus-within:text-black transition-colors">
-                                        Request
-                                    </label>
-                                    <textarea
-                                        name="message"
-                                        required
-                                        rows="4"
-                                        class="w-full bg-transparent border-b border-border py-2 text-base font-medium text-black/80 focus:outline-none focus:border-black transition-colors placeholder:text-black/10 resize-none"
-                                        placeholder="Project details..."
-                                    />
-                                </div>
-                                <button
-                                    id="submitBtn"
-                                    type="submit"
-                                    class="w-full bg-foreground text-white hover:opacity-90 h-12 rounded-md text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 mt-auto"
-                                >
-                                    <span>Send Message</span>
-                                    <i data-lucide="arrow-right" class="w-4 h-4" />
-                                </button>
-                            </form>
                         </div>
                     );
 
                 // TEXT MODULE (Generic)
                 if (module._type === 'module.text')
                     return (
-                        <div class="p-8 md:p-12 h-full flex flex-col overflow-y-auto no-scrollbar relative z-10">
-                            <div class="flex justify-between items-center mb-8">
-                                <span class="font-sans font-bold text-[10px] text-black/30 uppercase tracking-widest">{module.miniTitle || sheet.title}</span>
-                                <button onclick="window.closeSheets()" class="p-2 hover:bg-muted rounded-full transition-colors">
-                                    <i data-lucide="x" class="w-5 h-5 opacity-50" />
-                                </button>
-                            </div>
-                            {module.heading && <h2 class="text-3xl font-extrabold tracking-tighter mb-6">{module.heading}</h2>}
-                            <div class="text-sm text-black/60 leading-relaxed mb-8 font-medium">
-                                {module.content && <PortableText value={module.content} />}
+                        <div class="p-6 md:p-8 h-full flex flex-col relative z-10">
+                            <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)] overflow-y-auto hide-scrollbar flex-1">
+                                <div class="flex justify-between items-center mb-10">
+                                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                        <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">{module.miniTitle || sheet.title}</span>
+                                    </div>
+                                    <button
+                                        onclick="window.closeSheets()"
+                                        class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+                                    >
+                                        <i data-lucide="x" class="w-4 h-4" />
+                                    </button>
+                                </div>
+                                {module.heading && <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.heading}</h1>}
+                                <div class="text-[15px] leading-relaxed text-gray-500 font-medium">
+                                    {module.content && <PortableText value={module.content} />}
+                                </div>
                             </div>
                         </div>
                     );
@@ -331,11 +380,12 @@ const { mainMenu, contactEmail } = settings;
     window.submitContact = function (e) {
         const form = e.target;
         const submitButton = form.querySelector('button[type="submit"]');
-        const btnContent = submitButton.innerHTML;
+        const btnLabel = submitButton.querySelector('span');
+        const originalLabel = btnLabel ? btnLabel.textContent : 'Send Message';
 
         e.preventDefault();
 
-        submitButton.innerHTML = 'Sending...';
+        if (btnLabel) btnLabel.textContent = 'Sending...';
         submitButton.classList.add('opacity-70', 'cursor-wait');
 
         const formData = new FormData(form);
@@ -349,18 +399,18 @@ const { mainMenu, contactEmail } = settings;
             body: new URLSearchParams(formData).toString()
         })
             .then(() => {
-                submitButton.innerHTML = 'Message Sent';
-                submitButton.classList.remove('opacity-70', 'cursor-wait', 'bg-foreground', 'text-white');
-                submitButton.classList.add('bg-green-600', 'text-white');
+                if (btnLabel) btnLabel.textContent = 'Message Sent';
+                submitButton.classList.remove('opacity-70', 'cursor-wait', 'bg-[#1d1d1f]');
+                submitButton.classList.add('bg-green-600');
                 form.reset();
                 setTimeout(() => {
-                    submitButton.innerHTML = btnContent;
-                    submitButton.classList.remove('bg-green-600', 'text-white');
-                    submitButton.classList.add('bg-foreground', 'text-white');
+                    if (btnLabel) btnLabel.textContent = originalLabel;
+                    submitButton.classList.remove('bg-green-600');
+                    submitButton.classList.add('bg-[#1d1d1f]');
                 }, 3000);
             })
             .catch((error) => {
-                submitButton.innerHTML = 'Error';
+                if (btnLabel) btnLabel.textContent = 'Error';
                 console.error(error);
             });
     };
