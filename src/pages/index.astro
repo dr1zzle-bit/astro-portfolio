@@ -67,6 +67,7 @@ const projects = await fetchProjects();
         scale={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => d?.gridScale || 1))}
         mobileScale={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => d?.gridScaleMobile || 1))}
         resolution={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => d?.gridResolution || 1))}
+        margin={await import('@data/siteConfig').then((m) => m.fetchData().then((d) => (d?.gridMargin !== undefined ? d?.gridMargin : 10)))}
     />
     <Navigation />
 

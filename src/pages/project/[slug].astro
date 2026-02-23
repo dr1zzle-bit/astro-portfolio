@@ -2,6 +2,7 @@
 import Layout from '@layouts/Layout.astro';
 import Navigation from '@components/Navigation.astro';
 import { fetchProjects, fetchProjectBySlug } from '@data/project';
+import { fetchData } from '@data/siteConfig';
 import { urlFor } from '../../utils/sanity-client';
 import { PortableText } from '@portabletext/react';
 import type { Project } from 'types';
@@ -17,6 +18,8 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const project: Project = await fetchProjectBySlug(slug as string);
+const siteConfig = await fetchData();
+const gridMargin = siteConfig?.gridMargin !== undefined ? siteConfig.gridMargin : 10;
 
 if (!project) return Astro.redirect('/404');
 ---
@@ -92,7 +95,7 @@ if (!project) return Astro.redirect('/404');
 
         {
             project.gallery && project.gallery.length > 0 && (
-                <div class="columns-1 custom-gallery gap-[10px] space-y-[10px]">
+                <div class="columns-1 custom-gallery">
                     {project.gallery.map((item: any, index: number) => {
                         const realIndex = index + 1; // +1 because mainImage is 0
 
@@ -103,9 +106,9 @@ if (!project) return Astro.redirect('/404');
                                     onclick={`openLightbox(${realIndex})`}
                                 >
                                     <video src={item.videoUrl} muted loop autoplay playsinline class="w-full h-auto object-cover pointer-events-none" />
-                                    <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                                        <div class="bg-white/90 rounded-full p-2 backdrop-blur-sm">
-                                            <i data-lucide="play" class="w-4 h-4 text-black fill-black" />
+                                    <div class="absolute inset-0 flex items-end justify-start p-3">
+                                        <div class="bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-sm scale-90">
+                                            <i data-lucide="play" class="w-3 h-3 text-black fill-black" />
                                         </div>
                                     </div>
                                 </div>
@@ -153,7 +156,13 @@ if (!project) return Astro.redirect('/404');
         }
     </div>
 
-    <style define:vars={{ desktopCols: project.galleryColumns || 3 }}>
+    <style define:vars={{ desktopCols: project.galleryColumns || 3, gridMargin: `${gridMargin}px` }}>
+        .custom-gallery {
+            column-gap: var(--gridMargin);
+        }
+        .custom-gallery > div {
+            margin-bottom: var(--gridMargin);
+        }
         @media (min-width: 768px) {
             .custom-gallery {
                 column-count: var(--desktopCols);
@@ -198,13 +207,15 @@ if (!project) return Astro.redirect('/404');
         is:inline
         define:vars={{
             allImages: [
-                project.mainImage
+                project.mainImage && project.mainImage.asset
                     ? {
                           type: 'image',
                           thumb: urlFor(project.mainImage).width(1200).format('webp').url(),
-                          full: project.mainImage.useCrop
-                              ? urlFor(project.mainImage).width(1800).format('webp').url()
-                              : urlFor(project.mainImage.asset).width(1800).format('webp').url(),
+                          full:
+                              // @ts-ignore
+                              project.mainImage.useCrop
+                                  ? urlFor(project.mainImage).width(1800).format('webp').url()
+                                  : urlFor(project.mainImage.asset).width(1800).format('webp').url(),
                           alt: project.mainImage.alt || project.title
                       }
                     : null,
@@ -216,9 +227,11 @@ if (!project) return Astro.redirect('/404');
                         const ytId = item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?.[2];
                         return { type: 'youtube', id: ytId, caption: item.caption };
                     }
+                    if (!item.asset) return null;
                     return {
                         type: 'image',
                         thumb: urlFor(item).width(800).format('webp').url(),
+                        // @ts-ignore
                         full: item.useCrop ? urlFor(item).width(1800).format('webp').url() : urlFor(item.asset).width(1800).format('webp').url(),
                         alt: item.alt || ''
                     };

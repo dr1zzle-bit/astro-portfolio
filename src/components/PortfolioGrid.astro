@@ -7,9 +7,10 @@ interface Props {
     scale?: number;
     mobileScale?: number;
     resolution?: number;
+    margin?: number;
 }
 
-const { projects, scale = 1, mobileScale = 1, resolution = 1 } = Astro.props;
+const { projects, scale = 1, mobileScale = 1, resolution = 1, margin = 10 } = Astro.props;
 
 // Replicate grid logic parameters for SSR
 const rows = 10;
@@ -43,7 +44,7 @@ const baseItemHeight = 300;
 const itemWidth = baseItemWidth * scale;
 const itemHeight = baseItemHeight * scale;
 
-const gap = 10;
+const gap = margin;
 const verticalOffset = 40;
 ---
 

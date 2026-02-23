@@ -65,6 +65,15 @@ export default defineType({
       group: 'content',
     }),
     defineField({
+      name: 'gridMargin',
+      title: 'Grid Layout Margin',
+      description: 'Margin in pixels between items in the portfolio grid and product gallery (e.g., 10).',
+      type: 'number',
+      initialValue: 10,
+      validation: (Rule) => Rule.min(0).max(100).integer(),
+      group: 'content',
+    }),
+    defineField({
       name: 'titleSuffix',
       title: 'Suffix for page titles',
       description:
