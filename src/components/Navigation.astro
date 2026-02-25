@@ -81,7 +81,7 @@ const { mainMenu, contactEmail } = settings;
 
                                     <div class="flex-1">
                                         <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.headline || sheet.title}</h1>
-                                        <div class="text-[15px] leading-relaxed text-gray-500 font-medium mb-10">
+                                        <div class="text-[15px] leading-relaxed text-gray-500 mb-10">
                                             {module.content && <PortableText value={module.content} />}
                                         </div>
                                         {module.facts && (
@@ -119,48 +119,52 @@ const { mainMenu, contactEmail } = settings;
                 // SERVICES MODULE
                 if (module._type === 'module.services')
                     return (
-                        <div class="p-6 md:p-8 h-full flex flex-col relative z-10">
-                            <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)] flex flex-col h-full overflow-hidden">
-                                <div class="flex justify-between items-center mb-10 shrink-0">
-                                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
-                                        <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">{module.miniTitle || sheet.title}</span>
-                                    </div>
-                                    <button
-                                        onclick="window.closeSheets()"
-                                        class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
-                                    >
-                                        <i data-lucide="x" class="w-4 h-4" />
-                                    </button>
-                                </div>
-                                <div class="overflow-y-auto hide-scrollbar flex-1">
-                                    <div class="flex flex-col gap-4 font-sans">
-                                        {module.services?.map((service: any) => (
-                                            <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
-                                                <div class="flex justify-between items-start mb-3">
-                                                    <h3 class="font-bold text-[#1d1d1f]">{service.title}</h3>
-                                                    <i
-                                                        data-lucide={service.icon || 'star'}
-                                                        class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors"
-                                                    />
-                                                </div>
-                                                <p class="text-xs text-gray-500 leading-relaxed font-medium">{service.description}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {module.actionButton && (module.actionButton.fileUrl || module.actionButton.url) && (
-                                        <a
-                                            href={module.actionButton.fileUrl || module.actionButton.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="w-full mt-8 bg-[#1d1d1f] hover:bg-black text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20"
+                        <div class="h-full flex flex-col">
+                            <div class="p-6 md:p-8 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
+                                    <div class="flex justify-between items-center mb-10">
+                                        <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                            <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
+                                                {module.miniTitle || sheet.title}
+                                            </span>
+                                        </div>
+                                        <button
+                                            onclick="window.closeSheets()"
+                                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
                                         >
-                                            <div class="bg-white/10 rounded-full w-12 h-12 flex items-center justify-center text-white">
-                                                <i data-lucide="download" class="w-5 h-5" />
-                                            </div>
-                                            <span class="font-semibold text-sm">{module.actionButton.label}</span>
-                                            <div class="w-4" />
-                                        </a>
-                                    )}
+                                            <i data-lucide="x" class="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <div class="flex flex-col gap-4 font-sans">
+                                            {module.services?.map((service: any) => (
+                                                <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
+                                                    <div class="flex justify-between items-start mb-2">
+                                                        <h3 class="font-bold text-[#1d1d1f] text-[17px]">{service.title}</h3>
+                                                        <i
+                                                            data-lucide={service.icon || 'star'}
+                                                            class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors"
+                                                        />
+                                                    </div>
+                                                    <p class="text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        {module.actionButton && (module.actionButton.fileUrl || module.actionButton.url) && (
+                                            <a
+                                                href={module.actionButton.fileUrl || module.actionButton.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="w-full mt-8 bg-[#1d1d1f] hover:bg-[#333336] text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20"
+                                            >
+                                                <div class="bg-white/10 rounded-full w-12 h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                                    <i data-lucide="download" class="w-5 h-5" />
+                                                </div>
+                                                <span class="font-semibold text-sm">{module.actionButton.label}</span>
+                                                <div class="w-4" />
+                                            </a>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -169,77 +173,83 @@ const { mainMenu, contactEmail } = settings;
                 // CONTACT MODULE
                 if (module._type === 'module.contact')
                     return (
-                        <div class="p-6 md:p-8 h-full flex flex-col relative z-10">
-                            <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)] flex flex-col h-full overflow-hidden">
-                                <div class="flex justify-between items-center mb-10 shrink-0">
-                                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
-                                        <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">{module.miniTitle || sheet.title}</span>
-                                    </div>
-                                    <button
-                                        onclick="window.closeSheets()"
-                                        class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
-                                    >
-                                        <i data-lucide="x" class="w-4 h-4" />
-                                    </button>
-                                </div>
-                                <div class="mb-10 overflow-y-auto hide-scrollbar flex-1">
-                                    <div class="mb-10">
-                                        <h1 class="text-2xl font-bold tracking-tight text-[#1d1d1f]">{module.heading || "Let's create something together."}</h1>
-                                        {module.subtitle && <p class="text-gray-500 mt-2 text-sm font-medium">{module.subtitle}</p>}
-                                    </div>
-                                    <form
-                                        id={module.formName || 'contact'}
-                                        class="space-y-5"
-                                        onsubmit="window.submitContact(event)"
-                                        name={module.formName || 'contact'}
-                                        data-netlify="true"
-                                        netlify-honeypot="bot-field"
-                                    >
-                                        <input type="hidden" name="form-name" value={module.formName || 'contact'} />
-                                        <p class="hidden">
-                                            <label>
-                                                Don't fill this out if you're human: <input name="bot-field" />
-                                            </label>
-                                        </p>
-                                        <div>
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                required
-                                                class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] placeholder-gray-400 outline-none transition-all duration-300 font-medium"
-                                                placeholder="Your Name"
-                                            />
-                                        </div>
-                                        <div>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                required
-                                                class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] placeholder-gray-400 outline-none transition-all duration-300 font-medium"
-                                                placeholder="Email Address"
-                                            />
-                                        </div>
-                                        <div>
-                                            <textarea
-                                                name="message"
-                                                required
-                                                rows="4"
-                                                class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] placeholder-gray-400 outline-none transition-all duration-300 resize-none font-medium"
-                                                placeholder="Project Details..."
-                                            />
+                        <div class="h-full flex flex-col">
+                            <div class="p-6 md:p-8 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
+                                    <div class="flex justify-between items-center mb-10">
+                                        <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                            <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
+                                                {module.miniTitle || sheet.title}
+                                            </span>
                                         </div>
                                         <button
-                                            id="submitBtn"
-                                            type="submit"
-                                            class="w-full mt-4 bg-[#1d1d1f] hover:bg-black text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20"
+                                            onclick="window.closeSheets()"
+                                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
                                         >
-                                            <div class="bg-white/20 rounded-full w-12 h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-                                                <i data-lucide="send" class="w-5 h-5" />
-                                            </div>
-                                            <span class="font-semibold text-sm">Send Message</span>
-                                            <div class="w-4" />
+                                            <i data-lucide="x" class="w-4 h-4" />
                                         </button>
-                                    </form>
+                                    </div>
+                                    <div>
+                                        <div class="mb-10">
+                                            <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f]">
+                                                {module.heading || "Let's create something together."}
+                                            </h1>
+                                            {module.subtitle && <p class="text-[15px] leading-relaxed text-gray-500 mt-4 font-normal">{module.subtitle}</p>}
+                                        </div>
+                                        <form
+                                            id={module.formName || 'contact'}
+                                            class="space-y-5"
+                                            onsubmit="window.submitContact(event)"
+                                            name={module.formName || 'contact'}
+                                            data-netlify="true"
+                                            netlify-honeypot="bot-field"
+                                        >
+                                            <input type="hidden" name="form-name" value={module.formName || 'contact'} />
+                                            <p class="hidden">
+                                                <label>
+                                                    Don't fill this out if you're human: <input name="bot-field" />
+                                                </label>
+                                            </p>
+                                            <div>
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    required
+                                                    class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] text-[15px] placeholder-gray-400 outline-none transition-all duration-300 font-normal"
+                                                    placeholder="Your Name"
+                                                />
+                                            </div>
+                                            <div>
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    required
+                                                    class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] text-[15px] placeholder-gray-400 outline-none transition-all duration-300 font-normal"
+                                                    placeholder="Email Address"
+                                                />
+                                            </div>
+                                            <div>
+                                                <textarea
+                                                    name="message"
+                                                    required
+                                                    rows="4"
+                                                    class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] text-[15px] placeholder-gray-400 outline-none transition-all duration-300 resize-none font-normal"
+                                                    placeholder="Project Details..."
+                                                />
+                                            </div>
+                                            <button
+                                                id="submitBtn"
+                                                type="submit"
+                                                class="w-full mt-8 bg-[#1d1d1f] hover:bg-[#333336] text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20 cursor-pointer"
+                                            >
+                                                <div class="bg-white/20 rounded-full w-12 h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                                    <i data-lucide="send" class="w-5 h-5" />
+                                                </div>
+                                                <span class="font-semibold text-sm">Send Message</span>
+                                                <div class="w-4" />
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -248,22 +258,26 @@ const { mainMenu, contactEmail } = settings;
                 // TEXT MODULE (Generic)
                 if (module._type === 'module.text')
                     return (
-                        <div class="p-6 md:p-8 h-full flex flex-col relative z-10">
-                            <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)] overflow-y-auto hide-scrollbar flex-1">
-                                <div class="flex justify-between items-center mb-10">
-                                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
-                                        <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">{module.miniTitle || sheet.title}</span>
+                        <div class="h-full flex flex-col">
+                            <div class="p-6 md:p-8 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
+                                    <div class="flex justify-between items-center mb-10">
+                                        <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                            <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
+                                                {module.miniTitle || sheet.title}
+                                            </span>
+                                        </div>
+                                        <button
+                                            onclick="window.closeSheets()"
+                                            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+                                        >
+                                            <i data-lucide="x" class="w-4 h-4" />
+                                        </button>
                                     </div>
-                                    <button
-                                        onclick="window.closeSheets()"
-                                        class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
-                                    >
-                                        <i data-lucide="x" class="w-4 h-4" />
-                                    </button>
-                                </div>
-                                {module.heading && <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.heading}</h1>}
-                                <div class="text-[15px] leading-relaxed text-gray-500 font-medium">
-                                    {module.content && <PortableText value={module.content} />}
+                                    {module.heading && <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.heading}</h1>}
+                                    <div class="text-[15px] leading-relaxed text-gray-500 font-normal">
+                                        {module.content && <PortableText value={module.content} />}
+                                    </div>
                                 </div>
                             </div>
                         </div>
