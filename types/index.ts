@@ -117,6 +117,7 @@ export interface SiteConfig {
     seoDescription?: string;
     seoImage?: CustomImage;
     seoKeywords?: string[];
+    globalZoomLevel?: number;
 }
 
 export interface Slug {

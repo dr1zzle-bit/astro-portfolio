@@ -16,6 +16,7 @@ const CONFIG_QUERY_OBJ = `{
   gridScaleMobile,
   gridResolution,
   gridMargin,
+  globalZoomLevel,
   titleSuffix,
   seoDescription,
   seoImage,

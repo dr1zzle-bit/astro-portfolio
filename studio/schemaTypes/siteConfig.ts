@@ -74,6 +74,15 @@ export default defineType({
       group: 'content',
     }),
     defineField({
+      name: 'globalZoomLevel',
+      title: 'Global Zoom Level',
+      description: 'Scale factor for the entire website (e.g. 0.8 = 80%, 1.0 = 100%). Default is 0.8.',
+      type: 'number',
+      initialValue: 0.8,
+      validation: (Rule) => Rule.min(0.5).max(1.5).precision(2),
+      group: 'content',
+    }),
+    defineField({
       name: 'titleSuffix',
       title: 'Suffix for page titles',
       description:
