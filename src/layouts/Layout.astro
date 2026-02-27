@@ -20,6 +20,7 @@ const { addTitleSuffix } = Astro.props;
 const configData: SiteConfig = (await fetchData()) || {};
 
 const globalZoom = configData.globalZoom ?? 0.8;
+const globalZoomMobile = configData.globalZoomMobile ?? 1.0;
 
 // Title Logic: Project SEO Title > Page Title > Global Logic
 const titleSuffix = configData.titleSuffix && addTitleSuffix !== false ? configData.titleSuffix : undefined;
@@ -53,16 +54,37 @@ function formatCanonicalURL(url: string | URL) {
 ---
 
 <!doctype html>
-<html lang="en" class="light" style={`zoom: ${globalZoom};`}>
+<html lang="en" class="light">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <title>{title}</title>
         <meta name="generator" content={Astro.generator} />
 
+        <style
+            set:html={`
+            :root {
+                --global-zoom: ${globalZoom};
+            }
+            @media (max-width: 767px) {
+                :root {
+                    --global-zoom: ${globalZoomMobile};
+                }
+            }
+            html {
+                zoom: var(--global-zoom);
+            }
+        `}
+        ></style>
+
         <!-- Global Zoom Configuration -->
-        <script is:inline define:vars={{ globalZoom }}>
-            window.GLOBAL_ZOOM = globalZoom;
+        <script is:inline define:vars={{ globalZoom, globalZoomMobile }}>
+            function updateGlobalZoom() {
+                window.GLOBAL_ZOOM = window.innerWidth < 768 ? globalZoomMobile : globalZoom;
+            }
+            // Init and bind
+            updateGlobalZoom();
+            window.addEventListener('resize', updateGlobalZoom);
         </script>
 
         <!-- Fonts: Inter -->

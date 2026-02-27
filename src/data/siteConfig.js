@@ -13,6 +13,7 @@ const CONFIG_QUERY_OBJ = `{
   footer,
   footer,
   globalZoom,
+  globalZoomMobile,
   gridScale,
   gridTextScale,
   gridScaleMobile,

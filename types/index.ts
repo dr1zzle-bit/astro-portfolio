@@ -114,6 +114,7 @@ export interface SiteConfig {
     header?: Header;
     footer?: Footer;
     globalZoom?: number;
+    globalZoomMobile?: number;
     gridTextScale?: number;
     titleSuffix?: string;
     seoDescription?: string;
