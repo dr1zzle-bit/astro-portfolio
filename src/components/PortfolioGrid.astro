@@ -6,11 +6,12 @@ interface Props {
     projects: Project[];
     scale?: number;
     mobileScale?: number;
+    textScale?: number;
     resolution?: number;
     margin?: number;
 }
 
-const { projects, scale = 1, mobileScale = 1, resolution = 1, margin = 10 } = Astro.props;
+const { projects, scale = 1, mobileScale = 1, textScale = 1, resolution = 1, margin = 10 } = Astro.props;
 
 // Replicate grid logic parameters for SSR
 const rows = 10;
@@ -77,15 +78,17 @@ const verticalOffset = 40;
                         <div class="grid-img-container w-full h-full relative rounded-sm shadow-sm group cursor-pointer overflow-hidden">
                             {imageUrl && <img src={imageUrl} class="w-full h-full object-cover" loading="lazy" alt={project.title} />}
                             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                                <span class="text-white/50 text-[10px] font-bold font-sans mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                    {num}
-                                </span>
-                                <h3 class="text-white font-bold text-sm leading-tight translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75">
-                                    {project.title}
-                                </h3>
-                                <p class="text-white/70 text-[10px] font-medium translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-100">
-                                    {project.description}
-                                </p>
+                                <div style={`zoom: ${textScale};`}>
+                                    <span class="block text-white/50 text-[10px] font-bold font-sans mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                        {num}
+                                    </span>
+                                    <h3 class="text-white font-bold text-sm leading-tight translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                                        {project.title}
+                                    </h3>
+                                    <p class="text-white/70 text-[10px] font-medium translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-100">
+                                        {project.description}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -227,8 +230,9 @@ const verticalOffset = 40;
                     isDragging = false;
                     return;
                 }
-                xPos = this.x;
-                yPos = this.y;
+                const zoom = window.GLOBAL_ZOOM || 1;
+                xPos = this.x / zoom;
+                yPos = this.y / zoom;
             },
             onDragEnd: function () {
                 isDragging = false;
@@ -289,8 +293,9 @@ const verticalOffset = 40;
                 if (dy < -totalH / 2) dy += totalH;
                 if (dy > totalH / 2) dy -= totalH;
 
-                dx += window.innerWidth / 2;
-                dy += window.innerHeight / 2 - verticalOffset / 4;
+                const zoom = window.GLOBAL_ZOOM || 1;
+                dx += window.innerWidth / zoom / 2;
+                dy += window.innerHeight / zoom / 2 - verticalOffset / 4;
 
                 gsap.set(item.el, { x: dx, y: dy });
             });
@@ -305,7 +310,8 @@ const verticalOffset = 40;
         window.addEventListener(
             'wheel',
             (e) => {
-                const speed = 1.2;
+                const zoom = window.GLOBAL_ZOOM || 1;
+                const speed = 1.2 / zoom;
                 xPos -= e.deltaX * speed;
                 yPos -= e.deltaY * speed;
                 velocityX = 0;

@@ -366,9 +366,11 @@ const { mainMenu, contactEmail } = settings;
             navBtns.forEach((b) => b.classList.remove('active'));
             btn.classList.add('active');
 
+            const zoom = window.GLOBAL_ZOOM || 1;
+
             gsap.to(navPill, {
-                x: rect.left - parentRect.left,
-                width: rect.width,
+                x: (rect.left - parentRect.left) / zoom,
+                width: rect.width / zoom,
                 opacity: 1,
                 duration: 0.5,
                 ease: appleEase

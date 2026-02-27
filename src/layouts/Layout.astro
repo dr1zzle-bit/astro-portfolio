@@ -19,6 +19,8 @@ const { addTitleSuffix } = Astro.props;
 
 const configData: SiteConfig = (await fetchData()) || {};
 
+const globalZoom = configData.globalZoom ?? 0.8;
+
 // Title Logic: Project SEO Title > Page Title > Global Logic
 const titleSuffix = configData.titleSuffix && addTitleSuffix !== false ? configData.titleSuffix : undefined;
 const baseTitle = Astro.props.seoTitle || Astro.props.title;
@@ -51,12 +53,17 @@ function formatCanonicalURL(url: string | URL) {
 ---
 
 <!doctype html>
-<html lang="en" class="light" style={`zoom: ${configData.globalZoomLevel ?? 0.8};`}>
+<html lang="en" class="light" style={`zoom: ${globalZoom};`}>
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <title>{title}</title>
         <meta name="generator" content={Astro.generator} />
+
+        <!-- Global Zoom Configuration -->
+        <script is:inline define:vars={{ globalZoom }}>
+            window.GLOBAL_ZOOM = globalZoom;
+        </script>
 
         <!-- Fonts: Inter -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />

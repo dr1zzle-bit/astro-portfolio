@@ -113,11 +113,12 @@ export interface SiteConfig {
     favicon?: CustomImage;
     header?: Header;
     footer?: Footer;
+    globalZoom?: number;
+    gridTextScale?: number;
     titleSuffix?: string;
     seoDescription?: string;
     seoImage?: CustomImage;
     seoKeywords?: string[];
-    globalZoomLevel?: number;
 }
 
 export interface Slug {
