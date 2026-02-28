@@ -13,7 +13,7 @@ const settings: SiteSettings =
 const { mainMenu, contactEmail } = settings;
 ---
 
-<nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 md:z-[70] pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
+<nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
     <div class="apple-glass rounded-full p-1.5 flex items-center relative">
         <div id="nav-pill" class="absolute top-1.5 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none">
         </div>
@@ -38,8 +38,6 @@ const { mainMenu, contactEmail } = settings;
 <!-- DYNAMIC SHEETS -->
 {
     mainMenu?.map((sheet, i) => {
-        const nextSheet = mainMenu[i + 1];
-
         return (
             <div
                 id={`sheet-${sheet.slug.current}`}
@@ -56,7 +54,7 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.about')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="p-6 md:p-8 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-6 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
                                         <div class="flex justify-between items-center mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
@@ -115,18 +113,6 @@ const { mainMenu, contactEmail } = settings;
                                                     <div class="w-4" />
                                                 </a>
                                             )}
-                                            {nextSheet && (
-                                                <button
-                                                    onclick={`window.openSheet('${nextSheet.slug.current}')`}
-                                                    class="w-full mt-4 bg-transparent border border-black/10 hover:bg-[#1d1d1f] hover:border-transparent text-gray-500 hover:text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300"
-                                                >
-                                                    <div class="bg-[#F5F5F7] group-hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
-                                                        <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-                                                    </div>
-                                                    <span class="font-semibold text-sm">Next: {nextSheet.title}</span>
-                                                    <div class="w-4" />
-                                                </button>
-                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -137,7 +123,7 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.services')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="p-6 md:p-8 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-6 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
                                         <div class="flex justify-between items-center mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
@@ -181,18 +167,6 @@ const { mainMenu, contactEmail } = settings;
                                                     <div class="w-4" />
                                                 </a>
                                             )}
-                                            {nextSheet && (
-                                                <button
-                                                    onclick={`window.openSheet('${nextSheet.slug.current}')`}
-                                                    class="w-full mt-4 bg-transparent border border-black/10 hover:bg-[#1d1d1f] hover:border-transparent text-gray-500 hover:text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300"
-                                                >
-                                                    <div class="bg-[#F5F5F7] group-hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
-                                                        <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-                                                    </div>
-                                                    <span class="font-semibold text-sm">Next: {nextSheet.title}</span>
-                                                    <div class="w-4" />
-                                                </button>
-                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -203,7 +177,7 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.contact')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="p-6 md:p-8 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-6 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
                                         <div class="flex justify-between items-center mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
@@ -288,7 +262,7 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.text')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="p-6 md:p-8 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-6 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
                                         <div class="flex justify-between items-center mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
@@ -350,9 +324,18 @@ const { mainMenu, contactEmail } = settings;
                 onDragEnd: function () {
                     // If dragged more than 100px to the right, close it
                     if (this.x > 100) {
-                        window.closeSheets();
-                        // Reset transform after animation is handled by closeSheets
-                        // But closeSheets animates to 100% x.
+                        // Animate from current drag position for a smooth exit
+                        gsap.to(this.target, {
+                            x: '100%',
+                            duration: 0.4,
+                            ease: 'power2.inOut',
+                            onComplete: function () {
+                                panel.style.visibility = 'hidden';
+                            }
+                        });
+                        gsap.to(navPill, { opacity: 0, duration: 0.3 });
+                        navBtns.forEach((b) => b.classList.remove('active'));
+                        document.body.style.overflow = '';
                     } else {
                         // Snap back to 0
                         gsap.to(this.target, { x: 0, duration: 0.3, ease: 'power2.out' });
@@ -387,26 +370,29 @@ const { mainMenu, contactEmail } = settings;
             // GSAP Animation for entering
             sheet.style.visibility = 'visible';
             gsap.to(sheet, { x: '0%', duration: 0.8, ease: 'expo.out' });
-        }
-
-        // Hide Nav on Mobile
-        if (window.innerWidth < 768) {
-            gsap.to('nav', { y: 100, opacity: 0, duration: 0.3, ease: 'power2.in' });
+            document.body.style.overflow = 'hidden';
         }
 
         // Pill Animation
         const btn = document.querySelector(`.nav-btn[data-sheet="${name}"]`);
         if (btn) {
-            const rect = btn.getBoundingClientRect();
-            const parentRect = btn.parentElement.parentElement.getBoundingClientRect();
-
             // Text color logic
             navBtns.forEach((b) => b.classList.remove('active'));
             btn.classList.add('active');
 
+            // Use offset properties instead of getBoundingClientRect
+            // to avoid CSS zoom inconsistencies across browsers
+            const container = navPill.parentElement;
+            let btnLeft = 0;
+            let el = btn;
+            while (el && el !== container) {
+                btnLeft += el.offsetLeft;
+                el = el.offsetParent;
+            }
+
             gsap.to(navPill, {
-                x: rect.left - parentRect.left,
-                width: rect.width,
+                x: btnLeft - navPill.offsetLeft,
+                width: btn.offsetWidth,
                 opacity: 1,
                 duration: 0.5,
                 ease: appleEase
@@ -419,20 +405,18 @@ const { mainMenu, contactEmail } = settings;
         Object.values(sheets).forEach((s) => {
             gsap.to(s, {
                 x: '100%',
-                duration: 0.5,
-                ease: 'power3.in',
+                duration: 0.45,
+                ease: 'power2.inOut',
                 onComplete: function () {
                     s.style.visibility = 'hidden';
                 }
             });
         });
 
-        // Show Nav (always restore in case resizing, but strictly logic matches open)
-        gsap.to('nav', { y: 0, opacity: 1, duration: 0.3, ease: 'power2.out' });
-
         gsap.to(navPill, { opacity: 0, duration: 0.3 });
 
         navBtns.forEach((b) => b.classList.remove('active'));
+        document.body.style.overflow = '';
     };
 
     // --- CONTACT FORM LOGIC ---
