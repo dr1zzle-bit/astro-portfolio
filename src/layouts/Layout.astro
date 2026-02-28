@@ -74,13 +74,7 @@ function formatCanonicalURL(url: string | URL) {
             }
             @media (max-width: 767px) {
                 html {
-                    zoom: 1;
-                }
-                body {
-                    transform: scale(var(--global-zoom-mobile));
-                    transform-origin: top left;
-                    width: calc(100% / var(--global-zoom-mobile));
-                    min-height: calc(100vh / var(--global-zoom-mobile));
+                    zoom: var(--global-zoom-mobile);
                 }
             }
         `}

@@ -15,7 +15,11 @@ const { mainMenu, contactEmail } = settings;
 
 <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
     <div class="apple-glass rounded-full p-1.5 flex items-center relative">
-        <div id="nav-pill" class="absolute top-1.5 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none">
+        <div
+            id="nav-pill"
+            class="absolute top-1.5 left-0 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
+            style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;"
+        >
         </div>
         <ul class="flex space-x-1 relative z-10 font-medium text-sm tracking-tight">
             {
@@ -333,7 +337,7 @@ const { mainMenu, contactEmail } = settings;
                                 panel.style.visibility = 'hidden';
                             }
                         });
-                        gsap.to(navPill, { opacity: 0, duration: 0.3 });
+                        navPill.style.opacity = '0';
                         navBtns.forEach((b) => b.classList.remove('active'));
                         document.body.style.overflow = '';
                     } else {
@@ -373,15 +377,13 @@ const { mainMenu, contactEmail } = settings;
             document.body.style.overflow = 'hidden';
         }
 
-        // Pill Animation
+        // Pill Animation — use percentage positioning to cancel out CSS zoom
         const btn = document.querySelector(`.nav-btn[data-sheet="${name}"]`);
         if (btn) {
             // Text color logic
             navBtns.forEach((b) => b.classList.remove('active'));
             btn.classList.add('active');
 
-            // Use offset properties instead of getBoundingClientRect
-            // to avoid CSS zoom inconsistencies across browsers
             const container = navPill.parentElement;
             let btnLeft = 0;
             let el = btn;
@@ -389,14 +391,14 @@ const { mainMenu, contactEmail } = settings;
                 btnLeft += el.offsetLeft;
                 el = el.offsetParent;
             }
+            // offsetLeft is from border-box, CSS left is from padding-box
+            btnLeft -= container.clientLeft;
 
-            gsap.to(navPill, {
-                x: btnLeft - navPill.offsetLeft,
-                width: btn.offsetWidth,
-                opacity: 1,
-                duration: 0.5,
-                ease: appleEase
-            });
+            // Percentage-based: zoom affects numerator and denominator equally, so it cancels out
+            const cw = container.clientWidth;
+            navPill.style.left = (btnLeft / cw) * 100 + '%';
+            navPill.style.width = (btn.offsetWidth / cw) * 100 + '%';
+            navPill.style.opacity = '1';
         }
     };
 
@@ -413,7 +415,7 @@ const { mainMenu, contactEmail } = settings;
             });
         });
 
-        gsap.to(navPill, { opacity: 0, duration: 0.3 });
+        navPill.style.opacity = '0';
 
         navBtns.forEach((b) => b.classList.remove('active'));
         document.body.style.overflow = '';
