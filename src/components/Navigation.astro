@@ -371,13 +371,21 @@ const { mainMenu, contactEmail } = settings;
         // Close others first
         Object.keys(sheets).forEach((key) => {
             if (key !== name) {
-                gsap.to(sheets[key], { x: '100%', duration: 0.5, ease: 'power3.in' });
+                gsap.to(sheets[key], {
+                    x: '100%',
+                    duration: 0.5,
+                    ease: 'power3.in',
+                    onComplete: function () {
+                        sheets[key].style.visibility = 'hidden';
+                    }
+                });
             }
         });
 
         const sheet = sheets[name];
         if (sheet) {
             // GSAP Animation for entering
+            sheet.style.visibility = 'visible';
             gsap.to(sheet, { x: '0%', duration: 0.8, ease: 'expo.out' });
         }
 
@@ -396,11 +404,9 @@ const { mainMenu, contactEmail } = settings;
             navBtns.forEach((b) => b.classList.remove('active'));
             btn.classList.add('active');
 
-            const zoom = window.GLOBAL_ZOOM || 1;
-
             gsap.to(navPill, {
-                x: (rect.left - parentRect.left) / zoom,
-                width: rect.width / zoom,
+                x: rect.left - parentRect.left,
+                width: rect.width,
                 opacity: 1,
                 duration: 0.5,
                 ease: appleEase
@@ -411,7 +417,14 @@ const { mainMenu, contactEmail } = settings;
     window.closeSheets = function () {
         initSheets();
         Object.values(sheets).forEach((s) => {
-            gsap.to(s, { x: '100%', duration: 0.5, ease: 'power3.in' });
+            gsap.to(s, {
+                x: '100%',
+                duration: 0.5,
+                ease: 'power3.in',
+                onComplete: function () {
+                    s.style.visibility = 'hidden';
+                }
+            });
         });
 
         // Show Nav (always restore in case resizing, but strictly logic matches open)
