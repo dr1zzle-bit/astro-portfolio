@@ -65,14 +65,23 @@ function formatCanonicalURL(url: string | URL) {
             set:html={`
             :root {
                 --global-zoom: ${globalZoom};
-            }
-            @media (max-width: 767px) {
-                :root {
-                    --global-zoom: ${globalZoomMobile};
-                }
+                --global-zoom-mobile: ${globalZoomMobile};
             }
             html {
                 zoom: var(--global-zoom);
+                -webkit-text-size-adjust: none;
+                text-size-adjust: none;
+            }
+            @media (max-width: 767px) {
+                html {
+                    zoom: 1;
+                }
+                body {
+                    transform: scale(var(--global-zoom-mobile));
+                    transform-origin: top left;
+                    width: calc(100% / var(--global-zoom-mobile));
+                    min-height: calc(100vh / var(--global-zoom-mobile));
+                }
             }
         `}
         ></style>
