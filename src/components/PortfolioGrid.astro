@@ -208,6 +208,8 @@ const verticalOffset = 40;
 
     if (typeof Draggable !== 'undefined') {
         const dummyDiv = document.createElement('div');
+        let lastDragX = 0;
+        let lastDragY = 0;
 
         const dragInstance = Draggable.create(dummyDiv, {
             trigger: document.getElementById('viewport'),
@@ -223,6 +225,8 @@ const verticalOffset = 40;
                 isDragging = true;
                 velocityX = 0;
                 velocityY = 0;
+                lastDragX = this.x;
+                lastDragY = this.y;
             },
             onDrag: function () {
                 // Ignore if zooming
@@ -231,8 +235,13 @@ const verticalOffset = 40;
                     return;
                 }
                 const zoom = window.GLOBAL_ZOOM || 1;
-                xPos = this.x / zoom;
-                yPos = this.y / zoom;
+                // Use delta-based tracking to avoid cumulative zoom drift
+                const dx = this.x - lastDragX;
+                const dy = this.y - lastDragY;
+                xPos += dx / zoom;
+                yPos += dy / zoom;
+                lastDragX = this.x;
+                lastDragY = this.y;
             },
             onDragEnd: function () {
                 isDragging = false;
@@ -254,8 +263,11 @@ const verticalOffset = 40;
                     velocityY *= friction;
 
                     // Sync Draggable Proxy
-                    gsap.set(dummyDiv, { x: xPos, y: yPos });
+                    const zoom = window.GLOBAL_ZOOM || 1;
+                    gsap.set(dummyDiv, { x: xPos * zoom, y: yPos * zoom });
                     dragInstance.update();
+                    lastDragX = xPos * zoom;
+                    lastDragY = yPos * zoom;
                 }
             }
 
@@ -316,8 +328,10 @@ const verticalOffset = 40;
                 yPos -= e.deltaY * speed;
                 velocityX = 0;
                 velocityY = 0;
-                gsap.set(dummyDiv, { x: xPos, y: yPos });
+                gsap.set(dummyDiv, { x: xPos * zoom, y: yPos * zoom });
                 dragInstance.update();
+                lastDragX = xPos * zoom;
+                lastDragY = yPos * zoom;
             },
             { passive: true }
         );

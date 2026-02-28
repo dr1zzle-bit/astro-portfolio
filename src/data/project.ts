@@ -1,6 +1,6 @@
 import { client } from '../utils/sanity-client';
 
-const PROJECT_QUERY = `*[_type == "project"] | order(order asc) {
+const PROJECT_QUERY = `*[_type == "project" && !(_id in path("drafts.**"))] | order(order asc) {
   _id,
   title,
   slug,
@@ -30,7 +30,7 @@ export async function fetchProjects() {
 }
 
 export async function fetchProjectBySlug(slug: string) {
-  return await client.fetch(`*[_type == "project" && slug.current == $slug][0] {
+  return await client.fetch(`*[_type == "project" && !(_id in path("drafts.**")) && slug.current == $slug][0] {
         ...,
         galleryColumns,
         mainImage {

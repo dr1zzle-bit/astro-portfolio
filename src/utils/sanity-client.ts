@@ -38,7 +38,7 @@ export const sanityConfig: ClientConfig = {
     useCdn: !isDev,
     apiVersion: '2024-01-31',
     token,
-    perspective: isDev || isDeployPreview || previewDrafts ? 'previewDrafts' : 'published'
+    perspective: 'published'
 };
 
 export const client = createClient(sanityConfig);
