@@ -95,20 +95,27 @@ if (!project) return Astro.redirect('/404');
 
         {
             project.gallery && project.gallery.length > 0 && (
-                <div class="columns-1 custom-gallery">
+                <div class="custom-gallery grid opacity-0 transition-opacity duration-500 ease-in-out">
                     {project.gallery.map((item: any, index: number) => {
                         const realIndex = index + 1; // +1 because mainImage is 0
 
                         if (item._type === 'video' && item.videoUrl) {
                             return (
-                                <div
-                                    class="break-inside-avoid rounded-lg overflow-hidden shadow-sm group relative cursor-pointer"
-                                    onclick={`openLightbox(${realIndex})`}
-                                >
-                                    <video src={item.videoUrl} muted loop autoplay playsinline class="w-full h-auto object-cover pointer-events-none" />
-                                    <div class="absolute inset-0 flex items-end justify-start p-3">
-                                        <div class="bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-sm scale-90">
-                                            <i data-lucide="play" class="w-3 h-3 text-black fill-black" />
+                                <div class="gallery-item w-full">
+                                    <div class="rounded-lg overflow-hidden shadow-sm group relative cursor-pointer" onclick={`openLightbox(${realIndex})`}>
+                                        <video
+                                            src={item.videoUrl}
+                                            muted
+                                            loop
+                                            autoplay
+                                            playsinline
+                                            class="w-full h-auto object-cover pointer-events-none masonry-content"
+                                            onloadeddata="window.dispatchEvent(new Event('resize'))"
+                                        />
+                                        <div class="absolute inset-0 flex items-end justify-start p-3">
+                                            <div class="bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-sm scale-90">
+                                                <i data-lucide="play" class="w-3 h-3 text-black fill-black" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -121,14 +128,19 @@ if (!project) return Astro.redirect('/404');
                             const thumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
 
                             return (
-                                <div
-                                    class="break-inside-avoid rounded-lg overflow-hidden shadow-sm group relative cursor-pointer"
-                                    onclick={`openLightbox(${realIndex})`}
-                                >
-                                    <img src={thumb} alt={item.caption || 'YouTube Video'} class="w-full h-auto object-cover" loading="lazy" />
-                                    <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                                        <div class="bg-white/90 rounded-full p-3 backdrop-blur-sm shadow-xl">
-                                            <i data-lucide="youtube" class="w-6 h-6 text-red-600" />
+                                <div class="gallery-item w-full">
+                                    <div class="rounded-lg overflow-hidden shadow-sm group relative cursor-pointer" onclick={`openLightbox(${realIndex})`}>
+                                        <img
+                                            src={thumb}
+                                            alt={item.caption || 'YouTube Video'}
+                                            class="w-full h-auto object-cover masonry-content"
+                                            loading="lazy"
+                                            onload="window.dispatchEvent(new Event('resize'))"
+                                        />
+                                        <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                            <div class="bg-white/90 rounded-full p-3 backdrop-blur-sm shadow-xl">
+                                                <i data-lucide="youtube" class="w-6 h-6 text-red-600" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -138,15 +150,18 @@ if (!project) return Astro.redirect('/404');
                         // Default: Image
                         return (
                             item.asset && (
-                                <div class="break-inside-avoid rounded-lg overflow-hidden shadow-sm group">
-                                    <img
-                                        src={urlFor(item).width(800).format('webp').url()}
-                                        alt={item.alt || ''}
-                                        data-index={realIndex}
-                                        class="w-full h-auto object-cover hover:scale-[1.02] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out cursor-zoom-in gallery-img will-change-transform"
-                                        loading="lazy"
-                                        onclick={`openLightbox(${realIndex})`}
-                                    />
+                                <div class="gallery-item w-full">
+                                    <div class="rounded-lg overflow-hidden shadow-sm group">
+                                        <img
+                                            src={urlFor(item).width(800).format('webp').url()}
+                                            alt={item.alt || ''}
+                                            data-index={realIndex}
+                                            class="w-full h-auto object-cover hover:scale-[1.02] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out cursor-zoom-in gallery-img will-change-transform masonry-content"
+                                            loading="lazy"
+                                            onclick={`openLightbox(${realIndex})`}
+                                            onload="window.dispatchEvent(new Event('resize'))"
+                                        />
+                                    </div>
                                 </div>
                             )
                         );
@@ -158,14 +173,15 @@ if (!project) return Astro.redirect('/404');
 
     <style define:vars={{ desktopCols: project.galleryColumns || 3, gridMargin: `${gridMargin}px` }}>
         .custom-gallery {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            grid-auto-rows: 1px; /* The base increment for calculation */
             column-gap: var(--gridMargin);
-        }
-        .custom-gallery > div {
-            margin-bottom: var(--gridMargin);
+            align-items: start;
+            row-gap: 0; /* JS strictly handles vertical height spanning */
         }
         @media (min-width: 768px) {
             .custom-gallery {
-                column-count: var(--desktopCols);
+                grid-template-columns: repeat(var(--desktopCols), minmax(0, 1fr));
             }
         }
     </style>
@@ -407,5 +423,39 @@ if (!project) return Astro.redirect('/404');
         }
 
         window.addEventListener('load', initLightboxSwipe);
+
+        // --- JS MASONRY CALCULATION ---
+        function resizeMasonryGrid() {
+            const gallery = document.querySelector('.custom-gallery');
+            if (!gallery) return;
+
+            // Get computed margin (gap) from the style block properties
+            const compStyles = window.getComputedStyle(gallery);
+            const gridMargin = parseInt(compStyles.getPropertyValue('column-gap')) || 10;
+
+            const gridItems = document.querySelectorAll('.gallery-item');
+
+            gridItems.forEach((item) => {
+                const content = item.querySelector('.masonry-content');
+                if (!content) return;
+
+                // Calculate how many 1px rows the element requires
+                const rowSpan = Math.ceil(content.getBoundingClientRect().height + gridMargin);
+
+                // Set the exact row span calculation directly on the item wrapper
+                item.style.gridRowEnd = `span ${rowSpan}`;
+            });
+
+            // Reveal gallery safely after calculations
+            gallery.classList.remove('opacity-0');
+        }
+
+        // Run on load and whenever window resizes or images load
+        window.addEventListener('load', resizeMasonryGrid);
+        window.addEventListener('resize', resizeMasonryGrid);
+        // Fallback catch if loaded from cache
+        if (document.readyState === 'complete') {
+            resizeMasonryGrid();
+        }
     </script>
 </Layout>
