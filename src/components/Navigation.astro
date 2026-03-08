@@ -13,7 +13,7 @@ const settings: SiteSettings =
 const { mainMenu, contactEmail } = settings;
 ---
 
-<nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
+<nav id="main-nav" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-all duration-300 hover:scale-[1.02]">
     <div class="apple-glass rounded-full p-1.5 flex items-center relative">
         <div
             id="nav-pill"
@@ -21,14 +21,14 @@ const { mainMenu, contactEmail } = settings;
             style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;"
         >
         </div>
-        <ul class="flex space-x-1 relative z-10 font-medium text-xs md:text-sm tracking-tight">
+        <ul class="flex space-x-1 relative z-10 font-medium text-[13px] md:text-sm tracking-tight">
             {
                 mainMenu?.map((sheet) => (
                     <li>
                         <button
                             data-sheet={sheet.slug.current}
                             onclick={`window.openSheet('${sheet.slug.current}')`}
-                            class="nav-btn relative px-4 py-2 md:px-6 md:py-2.5 rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
+                            class="nav-btn relative px-6 py-2.5 rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
                         >
                             {sheet.title}
                         </button>
@@ -108,9 +108,9 @@ const { mainMenu, contactEmail } = settings;
                                                     href={module.actionButton.fileUrl || module.actionButton.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    class="w-full bg-[#F5F5F7] hover:bg-[#E8E8ED] text-[#1d1d1f] rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300"
+                                                    class="w-full bg-[#F5F5F7] hover:bg-[#E8E8ED] text-[#1d1d1f] rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 md:p-2 md:pr-8"
                                                 >
-                                                    <div class="bg-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center shadow-sm text-gray-400 group-hover:text-black transition-colors">
+                                                    <div class="bg-white rounded-full w-8 h-8 md:w-12 md:h-12 flex items-center justify-center shadow-sm text-gray-400 group-hover:text-black transition-colors shrink-0">
                                                         <i data-lucide="arrow-down" class="w-4 h-4 md:w-5 md:h-5" />
                                                     </div>
                                                     <span class="font-semibold text-[13px] md:text-sm">{module.actionButton.label}</span>
@@ -147,10 +147,10 @@ const { mainMenu, contactEmail } = settings;
                                                 {module.services?.map((service: any) => (
                                                     <div class="p-5 md:p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
                                                         <div class="flex justify-between items-start mb-2">
-                                                            <h3 class="font-bold text-[#1d1d1f] text-[15px] md:text-[17px]">{service.title}</h3>
+                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] md:text-[17px]">{service.title}</h3>
                                                             <i
                                                                 data-lucide={service.icon || 'star'}
-                                                                class="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-black transition-colors"
+                                                                class="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-black transition-colors shrink-0 ml-3"
                                                             />
                                                         </div>
                                                         <p class="text-[13px] md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
@@ -162,9 +162,9 @@ const { mainMenu, contactEmail } = settings;
                                                     href={module.actionButton.fileUrl || module.actionButton.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    class="w-full mt-6 md:mt-8 bg-[#1d1d1f] hover:bg-[#333336] text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20"
+                                                    class="w-full mt-6 md:mt-8 bg-[#1d1d1f] hover:bg-[#333336] text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20 md:p-2 md:pr-8"
                                                 >
-                                                    <div class="bg-white/10 rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                                    <div class="bg-white/10 rounded-full w-8 h-8 md:w-12 md:h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform shrink-0">
                                                         <i data-lucide="download" class="w-4 h-4 md:w-5 md:h-5" />
                                                     </div>
                                                     <span class="font-semibold text-[13px] md:text-sm">{module.actionButton.label}</span>
@@ -247,9 +247,9 @@ const { mainMenu, contactEmail } = settings;
                                                 <button
                                                     id="submitBtn"
                                                     type="submit"
-                                                    class="w-full mt-6 md:mt-8 bg-[#1d1d1f] hover:bg-[#333336] text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20 cursor-pointer"
+                                                    class="w-full mt-6 md:mt-8 bg-[#1d1d1f] hover:bg-[#333336] text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20 cursor-pointer md:p-2 md:pr-8"
                                                 >
-                                                    <div class="bg-white/20 rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                                    <div class="bg-white/20 rounded-full w-8 h-8 md:w-12 md:h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform shrink-0">
                                                         <i data-lucide="send" class="w-4 h-4 md:w-5 md:h-5" />
                                                     </div>
                                                     <span class="font-semibold text-[13px] md:text-sm">Send Message</span>
@@ -375,6 +375,14 @@ const { mainMenu, contactEmail } = settings;
             sheet.style.visibility = 'visible';
             gsap.to(sheet, { x: '0%', duration: 0.8, ease: 'expo.out' });
             document.body.style.overflow = 'hidden';
+            
+            // Hide main navigation
+            const mainNav = document.getElementById('main-nav');
+            if (mainNav) {
+                mainNav.style.opacity = '0';
+                mainNav.style.pointerEvents = 'none';
+                mainNav.style.transform = 'translate(-50%, 20px)';
+            }
         }
 
         // Pill Animation — use percentage positioning to cancel out CSS zoom
@@ -419,6 +427,14 @@ const { mainMenu, contactEmail } = settings;
 
         navBtns.forEach((b) => b.classList.remove('active'));
         document.body.style.overflow = '';
+        
+        // Show main navigation
+        const mainNav = document.getElementById('main-nav');
+        if (mainNav) {
+            mainNav.style.opacity = '1';
+            mainNav.style.pointerEvents = 'auto';
+            mainNav.style.transform = 'translate(-50%, 0)';
+        }
     };
 
     // --- CONTACT FORM LOGIC ---
