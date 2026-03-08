@@ -58,9 +58,9 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.about')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="px-3 pt-3 pb-24 md:p-8 md:pb-24 overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-4 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[28px] md:rounded-[40px] p-6 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
-                                        <div class="flex justify-between items-center mb-8 md:mb-10">
+                                        <div class="flex justify-between items-center mb-6 md:mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
                                                 <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
                                                     {module.miniTitle || 'Profile'}
@@ -87,8 +87,8 @@ const { mainMenu, contactEmail } = settings;
                                         )}
 
                                         <div class="flex-1">
-                                            <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[#1d1d1f] mb-4 md:mb-6">{module.headline || sheet.title}</h1>
-                                            <div class="text-[15px] leading-relaxed text-gray-500 mb-10">
+                                            <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.headline || sheet.title}</h1>
+                                            <div class="text-sm md:text-[15px] leading-relaxed text-gray-500 mb-6 md:mb-10">
                                                 {module.content && <PortableText value={module.content} />}
                                             </div>
                                             {module.facts && (
@@ -127,9 +127,9 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.services')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="px-3 pt-3 pb-24 md:p-8 md:pb-24 overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-4 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[28px] md:rounded-[40px] p-6 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
-                                        <div class="flex justify-between items-center mb-8 md:mb-10">
+                                        <div class="flex justify-between items-center mb-6 md:mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
                                                 <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
                                                     {module.miniTitle || sheet.title}
@@ -147,13 +147,13 @@ const { mainMenu, contactEmail } = settings;
                                                 {module.services?.map((service: any) => (
                                                     <div class="p-5 md:p-6 rounded-[20px] md:rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
                                                         <div class="flex justify-between items-start mb-2">
-                                                            <h3 class="font-bold text-[#1d1d1f] text-[17px]">{service.title}</h3>
+                                                            <h3 class="font-bold text-[#1d1d1f] text-base md:text-[17px]">{service.title}</h3>
                                                             <i
                                                                 data-lucide={service.icon || 'star'}
-                                                                class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors"
+                                                                class="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-black transition-colors"
                                                             />
                                                         </div>
-                                                        <p class="text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
+                                                        <p class="text-sm md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -181,9 +181,9 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.contact')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="px-3 pt-3 pb-24 md:p-8 md:pb-24 overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-4 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[28px] md:rounded-[40px] p-6 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
-                                        <div class="flex justify-between items-center mb-8 md:mb-10">
+                                        <div class="flex justify-between items-center mb-6 md:mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
                                                 <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
                                                     {module.miniTitle || sheet.title}
@@ -201,7 +201,7 @@ const { mainMenu, contactEmail } = settings;
                                                 <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[#1d1d1f]">
                                                     {module.heading || "Let's create something together."}
                                                 </h1>
-                                                {module.subtitle && <p class="text-[15px] leading-relaxed text-gray-500 mt-4 font-normal">{module.subtitle}</p>}
+                                                {module.subtitle && <p class="text-sm md:text-[15px] leading-relaxed text-gray-500 mt-4 font-normal">{module.subtitle}</p>}
                                             </div>
                                             <form
                                                 id={module.formName || 'contact'}
@@ -266,9 +266,9 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.text')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="px-3 pt-3 pb-24 md:p-8 md:pb-24 overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-4 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[28px] md:rounded-[40px] p-6 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
-                                        <div class="flex justify-between items-center mb-8 md:mb-10">
+                                        <div class="flex justify-between items-center mb-6 md:mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
                                                 <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
                                                     {module.miniTitle || sheet.title}
@@ -281,8 +281,8 @@ const { mainMenu, contactEmail } = settings;
                                                 <i data-lucide="x" class="w-4 h-4" />
                                             </button>
                                         </div>
-                                        {module.heading && <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[#1d1d1f] mb-4 md:mb-6">{module.heading}</h1>}
-                                        <div class="text-[15px] leading-relaxed text-gray-500 font-normal">
+                                        {module.heading && <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.heading}</h1>}
+                                        <div class="text-sm md:text-[15px] leading-relaxed text-gray-500 font-normal">
                                             {module.content && <PortableText value={module.content} />}
                                         </div>
                                     </div>
