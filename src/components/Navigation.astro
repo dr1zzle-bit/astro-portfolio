@@ -14,7 +14,7 @@ const { mainMenu, contactEmail } = settings;
 ---
 
 <!-- prettier-ignore -->
-<nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
+<nav id="main-nav" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-all duration-500 hover:scale-[1.02]">
     <div class="apple-glass rounded-full p-[6px] flex items-center relative">
         <div
             id="nav-pill"
@@ -146,15 +146,15 @@ const { mainMenu, contactEmail } = settings;
                                         <div>
                                             <div class="flex flex-col gap-4 font-sans">
                                                 {module.services?.map((service: any) => (
-                                                    <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
-                                                        <div class="flex justify-between items-start mb-2">
+                                                    <div class="relative overflow-hidden p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
+                                                        <div class="relative z-10 flex flex-col gap-1.5">
                                                             <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight">{service.title}</h3>
-                                                            <i
-                                                                data-lucide={service.icon || 'star'}
-                                                                class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors"
-                                                            />
+                                                            <p class="text-sm md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
                                                         </div>
-                                                        <p class="text-sm md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
+                                                        <i
+                                                            data-lucide={service.icon || 'star'}
+                                                            class="absolute -right-4 -bottom-4 w-28 h-28 text-black/[0.03] group-hover:text-black/[0.06] group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 pointer-events-none"
+                                                        />
                                                     </div>
                                                 ))}
                                             </div>
@@ -299,6 +299,7 @@ const { mainMenu, contactEmail } = settings;
 <script is:inline>
     // --- SHEETS LOGIC ---
     let sheets = {};
+    const mainNav = document.getElementById('main-nav');
     const navPill = document.getElementById('nav-pill');
     const navBtns = document.querySelectorAll('.nav-btn');
     const appleEase = 'cubic-bezier(0.32, 0.72, 0, 1)';
@@ -341,6 +342,10 @@ const { mainMenu, contactEmail } = settings;
                         navPill.style.opacity = '0';
                         navBtns.forEach((b) => b.classList.remove('active'));
                         document.body.style.overflow = '';
+                        if (mainNav) {
+                            mainNav.style.opacity = '1';
+                            mainNav.style.pointerEvents = 'auto';
+                        }
                     } else {
                         // Snap back to 0
                         gsap.to(this.target, { x: 0, duration: 0.3, ease: 'power2.out' });
@@ -376,6 +381,12 @@ const { mainMenu, contactEmail } = settings;
             sheet.style.visibility = 'visible';
             gsap.to(sheet, { x: '0%', duration: 0.8, ease: 'expo.out' });
             document.body.style.overflow = 'hidden';
+        }
+
+        // Hide navigation entirely on mobile view when sheets open
+        if (mainNav && window.innerWidth < 768) {
+            mainNav.style.opacity = '0';
+            mainNav.style.pointerEvents = 'none';
         }
 
         // Pill Animation — use percentage positioning to cancel out CSS zoom
@@ -420,6 +431,12 @@ const { mainMenu, contactEmail } = settings;
 
         navBtns.forEach((b) => b.classList.remove('active'));
         document.body.style.overflow = '';
+
+        // Restore navigation on mobile view
+        if (mainNav) {
+            mainNav.style.opacity = '1';
+            mainNav.style.pointerEvents = 'auto';
+        }
     };
 
     // --- CONTACT FORM LOGIC ---
