@@ -13,22 +13,23 @@ const settings: SiteSettings =
 const { mainMenu, contactEmail } = settings;
 ---
 
+<!-- prettier-ignore -->
 <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
-    <div class="apple-glass rounded-full p-1.5 flex items-center relative">
+    <div class="apple-glass rounded-full p-[6px] flex items-center relative">
         <div
             id="nav-pill"
-            class="absolute top-1.5 left-0 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
+            class="absolute top-[6px] left-0 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
             style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;"
         >
         </div>
-        <ul class="flex space-x-1 relative z-10 font-medium text-sm tracking-tight">
+        <ul class="flex space-x-[4px] relative z-10 font-medium text-[14px] leading-[20px] tracking-tight">
             {
                 mainMenu?.map((sheet) => (
                     <li>
                         <button
                             data-sheet={sheet.slug.current}
                             onclick={`window.openSheet('${sheet.slug.current}')`}
-                            class="nav-btn relative px-6 py-2.5 rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
+                            class="nav-btn relative px-[24px] py-[10px] rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
                         >
                             {sheet.title}
                         </button>
@@ -147,7 +148,7 @@ const { mainMenu, contactEmail } = settings;
                                                 {module.services?.map((service: any) => (
                                                     <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
                                                         <div class="flex justify-between items-start mb-2">
-                                                            <h3 class="font-bold text-[#1d1d1f] text-[16px] md:text-[17px]">{service.title}</h3>
+                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight">{service.title}</h3>
                                                             <i
                                                                 data-lucide={service.icon || 'star'}
                                                                 class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors"
@@ -222,7 +223,7 @@ const { mainMenu, contactEmail } = settings;
                                                         type="text"
                                                         name="name"
                                                         required
-                                                        class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] text-[15px] placeholder-gray-400 outline-none transition-all duration-300 font-normal"
+                                                        class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-[#1d1d1f] text-[14px] md:text-[15px] placeholder-gray-400 outline-none transition-all duration-300 font-normal"
                                                         placeholder="Your Name"
                                                     />
                                                 </div>
@@ -231,7 +232,7 @@ const { mainMenu, contactEmail } = settings;
                                                         type="email"
                                                         name="email"
                                                         required
-                                                        class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] text-[15px] placeholder-gray-400 outline-none transition-all duration-300 font-normal"
+                                                        class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-[#1d1d1f] text-[14px] md:text-[15px] placeholder-gray-400 outline-none transition-all duration-300 font-normal"
                                                         placeholder="Email Address"
                                                     />
                                                 </div>
@@ -240,20 +241,20 @@ const { mainMenu, contactEmail } = settings;
                                                         name="message"
                                                         required
                                                         rows="4"
-                                                        class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-2xl px-5 py-4 text-[#1d1d1f] text-[15px] placeholder-gray-400 outline-none transition-all duration-300 resize-none font-normal"
+                                                        class="w-full bg-[#F5F5F7] border-2 border-transparent focus:bg-white focus:border-black/5 rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-[#1d1d1f] text-[14px] md:text-[15px] placeholder-gray-400 outline-none transition-all duration-300 resize-none font-normal"
                                                         placeholder="Project Details..."
                                                     />
                                                 </div>
                                                 <button
                                                     id="submitBtn"
                                                     type="submit"
-                                                    class="w-full mt-8 bg-[#1d1d1f] hover:bg-[#333336] text-white rounded-full p-1.5 pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20 cursor-pointer"
+                                                    class="w-full mt-6 md:mt-8 bg-[#1d1d1f] hover:bg-[#333336] text-white rounded-full p-1.5 md:p-1.5 pr-5 md:pr-6 flex items-center justify-between group transition-all duration-300 shadow-lg shadow-black/20 cursor-pointer"
                                                 >
-                                                    <div class="bg-white/20 rounded-full w-12 h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-                                                        <i data-lucide="send" class="w-5 h-5" />
+                                                    <div class="bg-white/20 rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                                        <i data-lucide="send" class="w-4 h-4 md:w-5 md:h-5" />
                                                     </div>
-                                                    <span class="font-semibold text-sm">Send Message</span>
-                                                    <div class="w-4" />
+                                                    <span class="font-semibold text-[13.5px] md:text-sm">Send Message</span>
+                                                    <div class="w-3 md:w-4" />
                                                 </button>
                                             </form>
                                         </div>
