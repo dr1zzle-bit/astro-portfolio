@@ -14,21 +14,21 @@ const { mainMenu, contactEmail } = settings;
 ---
 
 <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-transform duration-300 hover:scale-[1.02]">
-    <div class="apple-glass rounded-full p-[6px] flex items-center relative">
+    <div class="apple-glass rounded-full p-1.5 flex items-center relative">
         <div
             id="nav-pill"
-            class="absolute top-[6px] left-0 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
+            class="absolute top-1.5 left-0 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
             style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;"
         >
         </div>
-        <ul class="flex space-x-[4px] relative z-10 font-medium text-[14px] leading-[20px] tracking-tight">
+        <ul class="flex space-x-1 relative z-10 font-medium text-sm tracking-tight">
             {
                 mainMenu?.map((sheet) => (
                     <li>
                         <button
                             data-sheet={sheet.slug.current}
                             onclick={`window.openSheet('${sheet.slug.current}')`}
-                            class="nav-btn relative px-[24px] py-[10px] rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
+                            class="nav-btn relative px-6 py-2.5 rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
                         >
                             {sheet.title}
                         </button>
@@ -87,8 +87,8 @@ const { mainMenu, contactEmail } = settings;
                                         )}
 
                                         <div class="flex-1">
-                                            <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.headline || sheet.title}</h1>
-                                            <div class="text-[15px] leading-relaxed text-gray-500 mb-10">
+                                            <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.headline || sheet.title}</h1>
+                                            <div class="text-sm md:text-[15px] leading-relaxed text-gray-500 mb-10">
                                                 {module.content && <PortableText value={module.content} />}
                                             </div>
                                             {module.facts && (
@@ -147,13 +147,13 @@ const { mainMenu, contactEmail } = settings;
                                                 {module.services?.map((service: any) => (
                                                     <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
                                                         <div class="flex justify-between items-start mb-2">
-                                                            <h3 class="font-bold text-[#1d1d1f] text-[17px]">{service.title}</h3>
+                                                            <h3 class="font-bold text-[#1d1d1f] text-[16px] md:text-[17px]">{service.title}</h3>
                                                             <i
                                                                 data-lucide={service.icon || 'star'}
                                                                 class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors"
                                                             />
                                                         </div>
-                                                        <p class="text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
+                                                        <p class="text-sm md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -198,10 +198,10 @@ const { mainMenu, contactEmail } = settings;
                                         </div>
                                         <div>
                                             <div class="mb-10">
-                                                <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f]">
+                                                <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[#1d1d1f]">
                                                     {module.heading || "Let's create something together."}
                                                 </h1>
-                                                {module.subtitle && <p class="text-[15px] leading-relaxed text-gray-500 mt-4 font-normal">{module.subtitle}</p>}
+                                                {module.subtitle && <p class="text-sm md:text-[15px] leading-relaxed text-gray-500 mt-4 font-normal">{module.subtitle}</p>}
                                             </div>
                                             <form
                                                 id={module.formName || 'contact'}
@@ -281,8 +281,8 @@ const { mainMenu, contactEmail } = settings;
                                                 <i data-lucide="x" class="w-5 h-5 md:w-4 md:h-4" />
                                             </button>
                                         </div>
-                                        {module.heading && <h1 class="text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.heading}</h1>}
-                                        <div class="text-[15px] leading-relaxed text-gray-500 font-normal">
+                                        {module.heading && <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[#1d1d1f] mb-6">{module.heading}</h1>}
+                                        <div class="text-sm md:text-[15px] leading-relaxed text-gray-500 font-normal">
                                             {module.content && <PortableText value={module.content} />}
                                         </div>
                                     </div>
