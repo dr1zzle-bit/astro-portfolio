@@ -112,10 +112,17 @@ function formatCanonicalURL(url: string | URL) {
         <meta name="description" content={description} />
 
         <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
         <meta property="og:url" content={formatCanonicalURL(canonicalURL)} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        {resolvedImage?.src && <meta property="og:image" content={resolvedImage.src} />}
+        {resolvedImage?.src && (
+            <>
+                <meta property="og:image" content={resolvedImage.src} />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+            </>
+        )}
         {resolvedImage?.src && imageObj?.alt && <meta property="og:image:alt" content={imageObj.alt} />}
 
         <!-- X/Twitter -->
