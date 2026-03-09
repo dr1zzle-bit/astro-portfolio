@@ -14,12 +14,12 @@ const { mainMenu, contactEmail } = settings;
 ---
 
 <!-- prettier-ignore -->
-<nav id="main-nav" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-[scale] duration-500 hover:scale-[1.02]">
+<nav id="main-nav" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-transform duration-500 hover:scale-[1.02]">
     <div class="apple-glass rounded-full p-1.5 flex items-center relative">
         <div
             id="nav-pill"
             class="absolute top-1.5 left-0 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
-            style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1);"
+            style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;"
         >
         </div>
         <ul class="flex space-x-1 relative z-10 font-medium text-[13px] md:text-sm tracking-tight">
@@ -150,15 +150,15 @@ const { mainMenu, contactEmail } = settings;
                                         <div>
                                             <div class="flex flex-col gap-4 font-sans">
                                                 {module.services?.map((service: any) => (
-                                                    <div class="relative overflow-hidden p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
-                                                        <div class="relative z-10 flex flex-col gap-1.5">
-                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight w-full">{service.title}</h3>
-                                                            <p class="text-[13.5px] md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
+                                                    <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
+                                                        <div class="flex justify-between items-start mb-2">
+                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight flex-1">{service.title}</h3>
+                                                            <i
+                                                                data-lucide={service.icon || 'star'}
+                                                                class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors ml-4 flex-shrink-0"
+                                                            />
                                                         </div>
-                                                        <i
-                                                            data-lucide={service.icon || 'star'}
-                                                            class="absolute -right-2 -bottom-2 w-24 h-24 text-black/[0.04] group-hover:text-black/[0.07] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 pointer-events-none"
-                                                        />
+                                                        <p class="text-[13.5px] md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -343,12 +343,12 @@ const { mainMenu, contactEmail } = settings;
                                 panel.style.visibility = 'hidden';
                             }
                         });
-                        gsap.to(navPill, { opacity: 0, duration: 0.3 });
+                        navPill.style.opacity = '0';
                         navBtns.forEach((b) => b.classList.remove('active'));
                         document.body.style.overflow = '';
                         if (mainNav && window.innerWidth < 768) {
                             mainNav.style.pointerEvents = 'auto';
-                            gsap.to(mainNav, { y: 0, x: "-50%", opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1 });
+                            gsap.to(mainNav, { opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1 });
                         }
                     } else {
                         // Snap back to 0
@@ -389,7 +389,7 @@ const { mainMenu, contactEmail } = settings;
 
         // Hide navigation smoothly on mobile view when sheets open
         if (mainNav && window.innerWidth < 768) {
-            gsap.to(mainNav, { y: 60, x: "-50%", opacity: 0, duration: 0.4, ease: 'power2.in', onComplete: () => mainNav.style.pointerEvents = 'none' });
+            gsap.to(mainNav, { opacity: 0, duration: 0.4, ease: 'power2.in', onComplete: () => mainNav.style.pointerEvents = 'none' });
         }
 
         // Pill Animation — use percentage positioning to cancel out CSS zoom
@@ -413,7 +413,7 @@ const { mainMenu, contactEmail } = settings;
             const cw = container.clientWidth;
             navPill.style.left = (btnLeft / cw) * 100 + '%';
             navPill.style.width = (btn.offsetWidth / cw) * 100 + '%';
-            gsap.to(navPill, { opacity: 1, duration: 0.3 });
+            navPill.style.opacity = '1';
         }
     };
 
@@ -430,7 +430,7 @@ const { mainMenu, contactEmail } = settings;
             });
         });
 
-        gsap.to(navPill, { opacity: 0, duration: 0.3 });
+        navPill.style.opacity = '0';
 
         navBtns.forEach((b) => b.classList.remove('active'));
         document.body.style.overflow = '';
@@ -438,7 +438,7 @@ const { mainMenu, contactEmail } = settings;
         // Restore navigation gracefully on mobile view
         if (mainNav && window.innerWidth < 768) {
             mainNav.style.pointerEvents = 'auto';
-            gsap.to(mainNav, { y: 0, x: "-50%", opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1 });
+            gsap.to(mainNav, { opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1 });
         }
     };
 

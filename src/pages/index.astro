@@ -28,20 +28,20 @@ const projects = await fetchProjects();
 
     <!-- Header / Logo Overlay -->
     <header class="fixed top-0 left-0 w-full z-40 p-8 flex justify-between items-start pointer-events-none">
-        <div id="header-logo-group" class="pointer-events-auto cursor-pointer group" onclick="if(window.closeSheets) window.closeSheets()">
-            <div
-                class="apple-glass rounded-full px-[30px] py-[16px] flex items-center gap-2 md:gap-3 transition-all duration-300 hover:scale-[1.02] text-black/60 group-hover:text-black"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 480 480"
-                    class="w-[18px] h-[18px] md:w-5 md:h-5 transition-transform duration-500 group-hover:rotate-90"
-                >
-                    <path
-                        d="M480 210H312.4L430.9 91.5l-42.4-42.4L270 167.6V0h-60v167.6L91.5 49.1 49.1 91.5 167.6 210H0v60h167.6L49.1 388.5l42.4 42.4L210 312.4V480h60V312.4l118.5 118.5 42.4-42.4L312.4 270H480v-60z"
-                        fill="currentColor"></path>
-                </svg>
-                <h1 class="text-[13px] md:text-sm font-extrabold tracking-[-0.03em] leading-[20px] transition-colors">mmichelic</h1>
+        <div id="header-logo-group" class="pointer-events-auto cursor-pointer group origin-left" onclick="if(window.closeSheets) window.closeSheets()">
+            <div class="apple-glass rounded-full p-1.5 flex items-center transition-all duration-500 hover:scale-[1.02]">
+                <div class="px-5 py-2 md:px-6 md:py-2.5 flex items-center gap-2 md:gap-3 relative z-10 text-black/60 group-hover:text-black">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 480 480"
+                        class="w-4 h-4 md:w-5 md:h-5 transition-transform duration-500 group-hover:rotate-90"
+                    >
+                        <path
+                            d="M480 210H312.4L430.9 91.5l-42.4-42.4L270 167.6V0h-60v167.6L91.5 49.1 49.1 91.5 167.6 210H0v60h167.6L49.1 388.5l42.4 42.4L210 312.4V480h60V312.4l118.5 118.5 42.4-42.4L312.4 270H480v-60z"
+                            fill="currentColor"></path>
+                    </svg>
+                    <h1 class="text-[14px] md:text-[15px] font-extrabold tracking-tight transition-colors">mmichelic</h1>
+                </div>
             </div>
         </div>
     </header>
