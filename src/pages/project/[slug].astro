@@ -104,112 +104,118 @@ const validGallery = (project.gallery || []).filter((item: any) => {
 
         {
             validGallery.length > 0 && (
-                <div class="custom-gallery grid opacity-0 transition-opacity duration-500 ease-in-out">
-                    {validGallery.map((item: any, index: number) => {
-                        const realIndex = index + 1; // +1 because mainImage is 0
+                <>
+                    <!-- MOBILE: 1 Column -->
+                    <div class="md:hidden flex flex-col w-full" style={`gap: ${gridMargin}px;`}>
+                        {validGallery.map((item: any, index: number) => {
+                            const realIndex = index + 1; // +1 because mainImage is 0
 
-                        if (item._type === 'video' && item.videoUrl) {
-                            return (
-                                <div class="gallery-item w-full">
-                                    <div class="rounded-lg overflow-hidden shadow-sm group relative cursor-pointer" onclick={`openLightbox(${realIndex})`}>
-                                        <video
-                                            src={item.videoUrl}
-                                            muted
-                                            loop
-                                            autoplay
-                                            playsinline
-                                            class="w-full h-auto object-cover pointer-events-none masonry-content"
-                                            onloadeddata="window.dispatchEvent(new Event('resize'))"
-                                        />
-                                        <div class="absolute inset-0 flex items-end justify-start p-3">
-                                            <div class="bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-sm scale-90">
-                                                <i data-lucide="play" class="w-3 h-3 text-black fill-black" />
+                            if (item._type === 'video' && item.videoUrl) {
+                                return (
+                                    <div class="gallery-item w-full">
+                                        <div class="rounded-lg overflow-hidden shadow-sm group relative cursor-pointer" onclick={`openLightbox(${realIndex})`}>
+                                            <video src={item.videoUrl} muted loop autoplay playsinline class="w-full h-auto object-cover pointer-events-none" />
+                                            <div class="absolute inset-0 flex items-end justify-start p-3">
+                                                <div class="bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-sm scale-90">
+                                                    <i data-lucide="play" class="w-3 h-3 text-black fill-black" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            );
-                        }
-
-                        if (item._type === 'youtube' && item.url) {
-                            const ytId = item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?.[2];
-                            if (!ytId) return null;
-                            const thumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-
-                            return (
-                                <div class="gallery-item w-full">
-                                    <div class="rounded-lg overflow-hidden shadow-sm group relative cursor-pointer" onclick={`openLightbox(${realIndex})`}>
-                                        <img
-                                            src={thumb}
-                                            alt={item.caption || 'YouTube Video'}
-                                            class="w-full h-auto object-cover masonry-content"
-                                            width="480"
-                                            height="360"
-                                            style="aspect-ratio: 16 / 9;"
-                                            loading="lazy"
-                                            onload="window.dispatchEvent(new Event('resize'))"
-                                        />
-                                        <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                                            <div class="bg-white/90 rounded-full p-3 backdrop-blur-sm shadow-xl">
-                                                <i data-lucide="youtube" class="w-6 h-6 text-red-600" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        }
-
-                        // Default: Image
-                        let imgW, imgH, aspectStyle = '';
-                        if (item.asset && item.asset._ref) {
-                            const match = item.asset._ref.match(/-(\d+)x(\d+)-/);
-                            if (match) {
-                                imgW = match[1];
-                                imgH = match[2];
-                                aspectStyle = `aspect-ratio: ${imgW} / ${imgH};`;
+                                );
                             }
-                        }
 
-                        return (
-                            item.asset && (
+                            if (item._type === 'youtube' && item.url) {
+                                const ytId = item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?.[2];
+                                if (!ytId) return null;
+                                const thumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+
+                                return (
+                                    <div class="gallery-item w-full">
+                                        <div class="rounded-lg overflow-hidden shadow-sm group relative cursor-pointer" onclick={`openLightbox(${realIndex})`}>
+                                            <img src={thumb} alt={item.caption || 'YouTube Video'} class="w-full h-auto object-cover" loading="lazy" />
+                                            <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                                <div class="bg-white/90 rounded-full p-3 backdrop-blur-sm shadow-xl">
+                                                    <i data-lucide="youtube" class="w-6 h-6 text-red-600" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            }
+
+                            // Default: Image
+                            return item.asset && (
                                 <div class="gallery-item w-full">
                                     <div class="rounded-lg overflow-hidden shadow-sm group">
-                                        <img
-                                            src={urlFor(item).width(800).format('webp').url()}
-                                            alt={item.alt || ''}
-                                            data-index={realIndex}
-                                            width={imgW}
-                                            height={imgH}
-                                            style={aspectStyle}
-                                            class="w-full h-auto object-cover hover:scale-[1.02] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out cursor-zoom-in gallery-img will-change-transform masonry-content"
-                                            loading="lazy"
-                                            onclick={`openLightbox(${realIndex})`}
-                                            onload="window.dispatchEvent(new Event('resize'))"
-                                        />
+                                        <img src={urlFor(item).width(800).format('webp').url()} alt={item.alt || ''} data-index={realIndex} class="w-full h-auto object-cover hover:scale-[1.02] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out cursor-zoom-in gallery-img will-change-transform" loading="lazy" onclick={`openLightbox(${realIndex})`} />
                                     </div>
                                 </div>
-                            )
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </div>
+
+                    <!-- DESKTOP: JS/CSS Flexible Columns -->
+                    <div class="hidden md:flex flex-row items-start w-full" style={`gap: ${gridMargin}px;`}>
+                        {(() => {
+                            const colsCount = project.galleryColumns || 3;
+                            const columns = Array.from({length: colsCount}, () => []);
+                            validGallery.forEach((item: any, index: number) => {
+                                columns[index % colsCount].push({ item, index });
+                            });
+                            return columns.map((colItems: any) => (
+                                <div class="flex-1 flex flex-col" style={`gap: ${gridMargin}px;`}>
+                                    {colItems.map(({ item, index }: any) => {
+                                        const realIndex = index + 1;
+                                        if (item._type === 'video' && item.videoUrl) {
+                                            return (
+                                                <div class="gallery-item w-full">
+                                                    <div class="rounded-lg overflow-hidden shadow-sm group relative cursor-pointer" onclick={`openLightbox(${realIndex})`}>
+                                                        <video src={item.videoUrl} muted loop autoplay playsinline class="w-full h-auto object-cover pointer-events-none" />
+                                                        <div class="absolute inset-0 flex items-end justify-start p-3">
+                                                            <div class="bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-sm scale-90">
+                                                                <i data-lucide="play" class="w-3 h-3 text-black fill-black" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        if (item._type === 'youtube' && item.url) {
+                                            const ytId = item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?.[2];
+                                            if (!ytId) return null;
+                                            const thumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                                            return (
+                                                <div class="gallery-item w-full">
+                                                    <div class="rounded-lg overflow-hidden shadow-sm group relative cursor-pointer" onclick={`openLightbox(${realIndex})`}>
+                                                        <img src={thumb} alt={item.caption || 'YouTube Video'} class="w-full h-auto object-cover" loading="lazy" />
+                                                        <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                                            <div class="bg-white/90 rounded-full p-3 backdrop-blur-sm shadow-xl">
+                                                                <i data-lucide="youtube" class="w-6 h-6 text-red-600" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        return item.asset && (
+                                            <div class="gallery-item w-full">
+                                                <div class="rounded-lg overflow-hidden shadow-sm group">
+                                                    <img src={urlFor(item).width(800).format('webp').url()} alt={item.alt || ''} data-index={realIndex} class="w-full h-auto object-cover hover:scale-[1.02] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out cursor-zoom-in gallery-img will-change-transform" loading="lazy" onclick={`openLightbox(${realIndex})`} />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ));
+                        })()}
+                    </div>
+                </>
             )
         }
     </div>
 
-    <style define:vars={{ desktopCols: project.galleryColumns || 3, gridMargin: `${gridMargin}px` }}>
-        .custom-gallery {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-            grid-auto-rows: 1px; /* The base increment for calculation */
-            column-gap: var(--gridMargin);
-            align-items: start;
-            row-gap: 0; /* JS strictly handles vertical height spanning */
-        }
-        @media (min-width: 768px) {
-            .custom-gallery {
-                grid-template-columns: repeat(var(--desktopCols), minmax(0, 1fr));
-            }
-        }
-    </style>
+
 
     <!-- LIGHTBOX OVERLAY -->
     <div
@@ -530,77 +536,6 @@ const validGallery = (project.gallery || []).filter((item: any) => {
 
         window.addEventListener('load', initLightboxSwipe);
 
-        // --- JS MASONRY CALCULATION ---
-        let masonryTimer = null;
 
-        function recalcItem(item, gap) {
-            const content = item.querySelector('.masonry-content');
-            if (!content) return;
-            let h = content.getBoundingClientRect().height;
-            
-            // If Chrome has not painted lazy image, calculate via explicit attributes
-            if (h === 0 || h < 20) {
-                const w = content.getBoundingClientRect().width || item.getBoundingClientRect().width;
-                const aspectH = content.getAttribute('height');
-                const aspectW = content.getAttribute('width');
-                if (aspectW && aspectH && w > 0) {
-                    h = w * (parseFloat(aspectH) / parseFloat(aspectW));
-                }
-            }
-
-            if (h > 0) {
-                item.style.gridRowEnd = `span ${Math.ceil(h + gap)}`;
-            }
-        }
-
-        function resizeMasonryGrid() {
-            const gallery = document.querySelector('.custom-gallery');
-            if (!gallery) return;
-
-            const compStyles = window.getComputedStyle(gallery);
-            const gap = parseInt(compStyles.getPropertyValue('column-gap')) || 10;
-
-            const gridItems = document.querySelectorAll('.gallery-item');
-            gridItems.forEach((item) => recalcItem(item, gap));
-
-            // Reveal gallery safely after calculations
-            gallery.classList.remove('opacity-0');
-        }
-
-        // Use ResizeObserver for reliable per-element size tracking (fixes Chrome overlap)
-        if (typeof ResizeObserver !== 'undefined') {
-            const gallery = document.querySelector('.custom-gallery');
-            const gap = gallery ? parseInt(window.getComputedStyle(gallery).getPropertyValue('column-gap')) || 10 : 10;
-
-            const ro = new ResizeObserver((entries) => {
-                for (const entry of entries) {
-                    const item = entry.target.closest('.gallery-item');
-                    if (item) recalcItem(item, gap);
-                }
-                if (gallery) gallery.classList.remove('opacity-0');
-            });
-
-            document.querySelectorAll('.masonry-content').forEach((el) => ro.observe(el));
-        }
-
-        // Run on load and resize as fallback
-        window.addEventListener('load', resizeMasonryGrid);
-        window.addEventListener('resize', resizeMasonryGrid);
-
-        // Debounced retry: catches lazy-loaded images that Chrome renders late
-        function debouncedMasonry() {
-            clearTimeout(masonryTimer);
-            masonryTimer = setTimeout(resizeMasonryGrid, 100);
-        }
-        window.addEventListener('resize', debouncedMasonry);
-
-        // Fallback catch if loaded from cache
-        if (document.readyState === 'complete') {
-            resizeMasonryGrid();
-        }
-
-        // Extra safety: re-run after short delays to catch any stragglers
-        setTimeout(resizeMasonryGrid, 500);
-        setTimeout(resizeMasonryGrid, 1500);
     </script>
 </Layout>
