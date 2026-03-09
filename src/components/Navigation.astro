@@ -15,21 +15,21 @@ const { mainMenu, contactEmail } = settings;
 
 <!-- prettier-ignore -->
 <nav id="main-nav" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-[scale] duration-500 hover:scale-[1.02]">
-    <div class="apple-glass rounded-full p-[4px] md:p-[6px] flex items-center relative">
+    <div class="apple-glass rounded-full p-1.5 flex items-center relative">
         <div
             id="nav-pill"
-            class="absolute top-[4px] md:top-[6px] left-0 h-[calc(100%-8px)] md:h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
+            class="absolute top-1.5 left-0 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
             style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1);"
         >
         </div>
-        <ul class="flex space-x-[2px] md:space-x-[4px] relative z-10 font-medium text-[13px] md:text-[14px] leading-[20px] tracking-tight">
+        <ul class="flex space-x-1 relative z-10 font-medium text-[13px] md:text-sm tracking-tight">
             {
                 mainMenu?.map((sheet) => (
                     <li>
                         <button
                             data-sheet={sheet.slug.current}
                             onclick={`window.openSheet('${sheet.slug.current}')`}
-                            class="nav-btn relative px-[16px] py-[6px] md:px-[24px] md:py-[10px] rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
+                            class="nav-btn relative px-6 py-2.5 rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
                         >
                             {sheet.title}
                         </button>
@@ -95,11 +95,15 @@ const { mainMenu, contactEmail } = settings;
                                             {module.facts && (
                                                 <div class="space-y-4 border-t border-gray-100 pt-8 mb-10">
                                                     {module.facts.map((fact: any) => (
-                                                        <div class="flex justify-between items-center text-sm group cursor-default">
-                                                            <span class="text-gray-400 font-medium w-24 group-hover:text-gray-600 transition-colors">
+                                                        <div class="flex justify-between items-start text-sm group cursor-default">
+                                                            <span class="text-gray-400 font-medium w-24 flex-shrink-0 group-hover:text-gray-600 transition-colors">
                                                                 {fact.label}
                                                             </span>
-                                                            <span class="text-[#1d1d1f] font-semibold text-right">{fact.value}</span>
+                                                            <span class="text-[#1d1d1f] font-semibold text-right flex flex-wrap justify-end gap-x-1 border-gray-100/0">
+                                                                {String(fact.value || '').split(',').map((val: string, index: number, arr: string[]) => (
+                                                                    <span class="whitespace-nowrap">{val.trim()}{index < arr.length - 1 ? ',' : ''}</span>
+                                                                ))}
+                                                            </span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -146,14 +150,15 @@ const { mainMenu, contactEmail } = settings;
                                         <div>
                                             <div class="flex flex-col gap-4 font-sans">
                                                 {module.services?.map((service: any) => (
-                                                    <div class="p-5 md:p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group flex items-start gap-4 md:gap-5 cursor-default">
-                                                        <div class="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                                                            <i data-lucide={service.icon || 'star'} class="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-[#1d1d1f] transition-colors" />
+                                                    <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
+                                                        <div class="flex justify-between items-start mb-2">
+                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight flex-1">{service.title}</h3>
+                                                            <i
+                                                                data-lucide={service.icon || 'star'}
+                                                                class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors ml-4 flex-shrink-0"
+                                                            />
                                                         </div>
-                                                        <div class="flex flex-col gap-1 md:gap-1.5 pt-0.5 md:pt-1">
-                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight">{service.title}</h3>
-                                                            <p class="text-[13.5px] md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
-                                                        </div>
+                                                        <p class="text-[13.5px] md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
                                                     </div>
                                                 ))}
                                             </div>
