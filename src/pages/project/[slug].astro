@@ -22,6 +22,15 @@ const siteConfig = await fetchData();
 const gridMargin = siteConfig?.gridMargin !== undefined ? siteConfig.gridMargin : 10;
 
 if (!project) return Astro.redirect('/404');
+
+const validGallery = (project.gallery || []).filter((item: any) => {
+    if (item._type === 'video' && item.videoUrl) return true;
+    if (item._type === 'youtube' && item.url) {
+        const ytId = item.url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?.[2];
+        return !!ytId;
+    }
+    return !!item.asset;
+});
 ---
 
 <Layout title={project.title} seoTitle={project.seoTitle} seoDescription={project.seoDescription} seoImage={project.seoImage}>
@@ -94,9 +103,9 @@ if (!project) return Astro.redirect('/404');
         }
 
         {
-            project.gallery && project.gallery.length > 0 && (
+            validGallery.length > 0 && (
                 <div class="custom-gallery grid opacity-0 transition-opacity duration-500 ease-in-out">
-                    {project.gallery.map((item: any, index: number) => {
+                    {validGallery.map((item: any, index: number) => {
                         const realIndex = index + 1; // +1 because mainImage is 0
 
                         if (item._type === 'video' && item.videoUrl) {
@@ -235,7 +244,7 @@ if (!project) return Astro.redirect('/404');
                           alt: project.mainImage.alt || project.title
                       }
                     : null,
-                ...(project.gallery || []).map((item) => {
+                ...validGallery.map((item: any) => {
                     if (item._type === 'video' && item.videoUrl) {
                         return { type: 'video', src: item.videoUrl, alt: item.alt };
                     }
