@@ -9,6 +9,7 @@ import netlify from '@astrojs/netlify';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://michelic.com',
   image: {
       domains: ['cdn.sanity.io']
   },
