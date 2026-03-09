@@ -150,13 +150,15 @@ const { mainMenu, contactEmail } = settings;
                                         <div>
                                             <div class="flex flex-col gap-4 font-sans">
                                                 {module.services?.map((service: any) => (
-                                                    <div class="p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
+                                                    <div class="relative overflow-hidden p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
+                                                        <div class="relative z-10 flex flex-col gap-1.5 md:gap-2">
+                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight">{service.title}</h3>
+                                                            <p class="text-[13.5px] md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
+                                                        </div>
                                                         <i
                                                             data-lucide={service.icon || 'star'}
-                                                            class="w-5 h-5 text-gray-400 group-hover:text-black transition-colors mb-2 md:mb-3"
+                                                            class="absolute -right-4 -bottom-4 w-32 h-32 text-black/[0.03] group-hover:text-black/[0.06] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-700 pointer-events-none"
                                                         />
-                                                        <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight mb-2">{service.title}</h3>
-                                                        <p class="text-[13.5px] md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
                                                     </div>
                                                 ))}
                                             </div>
