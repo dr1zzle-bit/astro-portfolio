@@ -12,6 +12,7 @@ export default defineConfig({
   image: {
       domains: ['cdn.sanity.io']
   },
+  site: 'https://michelic.com',
 
   integrations: [sanity(sanityConfig), react()],
 

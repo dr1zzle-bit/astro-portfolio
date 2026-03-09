@@ -1,5 +1,5 @@
 User-agent: *
-Disallow: /
+Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
@@ -9,3 +9,5 @@ Allow: /
 
 User-agent: Twitterbot
 Allow: /
+
+Sitemap: https://michelic.com/sitemap-index.xml
