@@ -74,12 +74,20 @@ const projects = await fetchProjects();
 
     <script is:inline>
         // Intro Logic
-        window.addEventListener('load', () => {
-            const tl = gsap.timeline();
-            tl.to('#intro-overlay', { opacity: 0, duration: 0.8, ease: 'power2.inOut' })
-                .from('header', { y: -20, opacity: 0, duration: 1 }, '-=0.8')
-                .from('nav', { y: 20, opacity: 0, duration: 1 }, '-=0.8');
-        });
+        let introPlayed = false;
+        function playIntro() {
+            if(introPlayed) return;
+            introPlayed = true;
+            const overlay = document.getElementById('intro-overlay');
+            if (overlay) {
+                const tl = gsap.timeline();
+                tl.to(overlay, { opacity: 0, duration: 0.8, ease: 'power2.inOut', onComplete: () => overlay.style.display = 'none' })
+                    .from('header', { y: -20, opacity: 0, duration: 1 }, '-=0.8')
+                    .from('#main-nav', { y: 20, opacity: 0, duration: 1 }, '-=0.8');
+            }
+        }
+        window.addEventListener('load', playIntro);
+        setTimeout(playIntro, 2000); // 2-second fallback if assets hang
 
         // Dot Matrix Logic (Simplified hook for PortfolioGrid to access if needed)
         // Note: The dot matrix logic is tightly coupled with the render loop in PortfolioGrid.
