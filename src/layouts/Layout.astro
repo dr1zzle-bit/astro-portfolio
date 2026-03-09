@@ -33,7 +33,7 @@ const description = Astro.props.seoDescription || Astro.props.description || con
 // Image Logic: Project SEO > Page Image > Global SEO
 const imageObj = Astro.props.seoImage || Astro.props.image || configData.seoImage;
 const resolvedImage = imageObj?.asset
-    ? { src: new URL(urlFor(imageObj).width(1200).height(630).url(), Astro.site).toString() }
+    ? { src: new URL(urlFor(imageObj).width(1200).height(630).format('webp').url(), Astro.site).toString() }
     : imageObj?.src
       ? { src: new URL(imageObj.src, Astro.site).toString() }
       : undefined;
