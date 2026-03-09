@@ -339,6 +339,7 @@ const { mainMenu, contactEmail } = settings;
                             x: '100%',
                             duration: 0.4,
                             ease: 'power2.inOut',
+                            overwrite: true,
                             onComplete: function () {
                                 panel.style.visibility = 'hidden';
                             }
@@ -348,11 +349,11 @@ const { mainMenu, contactEmail } = settings;
                         document.body.style.overflow = '';
                         if (mainNav && window.innerWidth < 768) {
                             mainNav.style.pointerEvents = 'auto';
-                            gsap.to(mainNav, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1 });
+                            gsap.to(mainNav, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1, overwrite: true });
                         }
                     } else {
                         // Snap back to 0
-                        gsap.to(this.target, { x: 0, duration: 0.3, ease: 'power2.out' });
+                        gsap.to(this.target, { x: 0, duration: 0.3, ease: 'power2.out', overwrite: true });
                     }
                 }
             });
@@ -372,6 +373,7 @@ const { mainMenu, contactEmail } = settings;
                     x: '100%',
                     duration: 0.5,
                     ease: 'power3.in',
+                    overwrite: true,
                     onComplete: function () {
                         sheets[key].style.visibility = 'hidden';
                     }
@@ -383,13 +385,13 @@ const { mainMenu, contactEmail } = settings;
         if (sheet) {
             // GSAP Animation for entering
             sheet.style.visibility = 'visible';
-            gsap.to(sheet, { x: '0%', duration: 0.8, ease: 'expo.out' });
+            gsap.to(sheet, { x: '0%', duration: 0.8, ease: 'expo.out', overwrite: true });
             document.body.style.overflow = 'hidden';
         }
 
         // Hide navigation smoothly on mobile view when sheets open
         if (mainNav && window.innerWidth < 768) {
-            gsap.to(mainNav, { y: 60, opacity: 0, duration: 0.4, ease: 'power2.in', onComplete: () => mainNav.style.pointerEvents = 'none' });
+            gsap.to(mainNav, { y: 60, opacity: 0, duration: 0.4, ease: 'power2.in', overwrite: true, onComplete: () => mainNav.style.pointerEvents = 'none' });
         }
 
         // Pill Animation — use percentage positioning to cancel out CSS zoom
@@ -424,6 +426,7 @@ const { mainMenu, contactEmail } = settings;
                 x: '100%',
                 duration: 0.45,
                 ease: 'power2.inOut',
+                overwrite: true,
                 onComplete: function () {
                     s.style.visibility = 'hidden';
                 }
@@ -438,7 +441,7 @@ const { mainMenu, contactEmail } = settings;
         // Restore navigation gracefully on mobile view
         if (mainNav && window.innerWidth < 768) {
             mainNav.style.pointerEvents = 'auto';
-            gsap.to(mainNav, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1 });
+            gsap.to(mainNav, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1, overwrite: true });
         }
     };
 
