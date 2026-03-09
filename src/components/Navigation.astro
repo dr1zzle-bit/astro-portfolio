@@ -14,22 +14,22 @@ const { mainMenu, contactEmail } = settings;
 ---
 
 <!-- prettier-ignore -->
-<nav id="main-nav" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-all duration-500 hover:scale-[1.02]">
-    <div class="apple-glass rounded-full p-[6px] flex items-center relative">
+<nav id="main-nav" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto transition-[scale] duration-500 hover:scale-[1.02]">
+    <div class="apple-glass rounded-full p-[4px] md:p-[6px] flex items-center relative">
         <div
             id="nav-pill"
-            class="absolute top-[6px] left-0 h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
-            style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;"
+            class="absolute top-[4px] md:top-[6px] left-0 h-[calc(100%-8px)] md:h-[calc(100%-12px)] rounded-full bg-[#1d1d1f] shadow-lg shadow-black/20 z-0 opacity-0 pointer-events-none"
+            style="transition: left 0.5s cubic-bezier(0.32, 0.72, 0, 1), width 0.5s cubic-bezier(0.32, 0.72, 0, 1);"
         >
         </div>
-        <ul class="flex space-x-[4px] relative z-10 font-medium text-[14px] leading-[20px] tracking-tight">
+        <ul class="flex space-x-[2px] md:space-x-[4px] relative z-10 font-medium text-[13px] md:text-[14px] leading-[20px] tracking-tight">
             {
                 mainMenu?.map((sheet) => (
                     <li>
                         <button
                             data-sheet={sheet.slug.current}
                             onclick={`window.openSheet('${sheet.slug.current}')`}
-                            class="nav-btn relative px-[24px] py-[10px] rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
+                            class="nav-btn relative px-[16px] py-[6px] md:px-[24px] md:py-[10px] rounded-full text-black/60 hover:text-black [&.active]:text-white [&.active]:hover:text-white transition-colors duration-300 capitalize mix-blend-normal"
                         >
                             {sheet.title}
                         </button>
@@ -59,7 +59,7 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.about')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="p-6 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-6 md:p-8 pb-6 md:pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
                                         <div class="flex justify-between items-center mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
@@ -128,7 +128,7 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.services')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="p-6 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-6 md:p-8 pb-6 md:pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
                                         <div class="flex justify-between items-center mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
@@ -146,15 +146,14 @@ const { mainMenu, contactEmail } = settings;
                                         <div>
                                             <div class="flex flex-col gap-4 font-sans">
                                                 {module.services?.map((service: any) => (
-                                                    <div class="relative overflow-hidden p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group cursor-default">
-                                                        <div class="relative z-10 flex flex-col gap-1.5">
-                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight">{service.title}</h3>
-                                                            <p class="text-sm md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
+                                                    <div class="p-5 md:p-6 rounded-[24px] bg-[#F5F5F7] hover:bg-[#E8E8ED] transition-colors duration-300 group flex items-start gap-4 md:gap-5 cursor-default">
+                                                        <div class="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                                                            <i data-lucide={service.icon || 'star'} class="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-[#1d1d1f] transition-colors" />
                                                         </div>
-                                                        <i
-                                                            data-lucide={service.icon || 'star'}
-                                                            class="absolute -right-4 -bottom-4 w-28 h-28 text-black/[0.03] group-hover:text-black/[0.06] group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 pointer-events-none"
-                                                        />
+                                                        <div class="flex flex-col gap-1 md:gap-1.5 pt-0.5 md:pt-1">
+                                                            <h3 class="font-bold text-[#1d1d1f] text-[14px] sm:text-[15px] md:text-[17px] leading-tight">{service.title}</h3>
+                                                            <p class="text-[13.5px] md:text-[15px] text-gray-500 leading-relaxed font-normal">{service.description}</p>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -182,7 +181,7 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.contact')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="p-6 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-6 md:p-8 pb-6 md:pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
                                         <div class="flex justify-between items-center mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
@@ -267,7 +266,7 @@ const { mainMenu, contactEmail } = settings;
                     if (module._type === 'module.text')
                         return (
                             <div class="h-full flex flex-col">
-                                <div class="p-6 md:p-8 pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
+                                <div class="p-6 md:p-8 pb-6 md:pb-24 md:w-full overflow-y-auto hide-scrollbar flex flex-col h-full relative z-10">
                                     <div class="bg-white rounded-[40px] p-10 md:p-12 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.06)]">
                                         <div class="flex justify-between items-center mb-10">
                                             <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
@@ -339,12 +338,12 @@ const { mainMenu, contactEmail } = settings;
                                 panel.style.visibility = 'hidden';
                             }
                         });
-                        navPill.style.opacity = '0';
+                        gsap.to(navPill, { opacity: 0, duration: 0.3 });
                         navBtns.forEach((b) => b.classList.remove('active'));
                         document.body.style.overflow = '';
-                        if (mainNav) {
-                            mainNav.style.opacity = '1';
+                        if (mainNav && window.innerWidth < 768) {
                             mainNav.style.pointerEvents = 'auto';
+                            gsap.to(mainNav, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1 });
                         }
                     } else {
                         // Snap back to 0
@@ -383,10 +382,9 @@ const { mainMenu, contactEmail } = settings;
             document.body.style.overflow = 'hidden';
         }
 
-        // Hide navigation entirely on mobile view when sheets open
+        // Hide navigation smoothly on mobile view when sheets open
         if (mainNav && window.innerWidth < 768) {
-            mainNav.style.opacity = '0';
-            mainNav.style.pointerEvents = 'none';
+            gsap.to(mainNav, { y: 60, opacity: 0, duration: 0.4, ease: 'power2.in', onComplete: () => mainNav.style.pointerEvents = 'none' });
         }
 
         // Pill Animation — use percentage positioning to cancel out CSS zoom
@@ -410,7 +408,7 @@ const { mainMenu, contactEmail } = settings;
             const cw = container.clientWidth;
             navPill.style.left = (btnLeft / cw) * 100 + '%';
             navPill.style.width = (btn.offsetWidth / cw) * 100 + '%';
-            navPill.style.opacity = '1';
+            gsap.to(navPill, { opacity: 1, duration: 0.3 });
         }
     };
 
@@ -427,15 +425,15 @@ const { mainMenu, contactEmail } = settings;
             });
         });
 
-        navPill.style.opacity = '0';
+        gsap.to(navPill, { opacity: 0, duration: 0.3 });
 
         navBtns.forEach((b) => b.classList.remove('active'));
         document.body.style.overflow = '';
 
-        // Restore navigation on mobile view
-        if (mainNav) {
-            mainNav.style.opacity = '1';
+        // Restore navigation gracefully on mobile view
+        if (mainNav && window.innerWidth < 768) {
             mainNav.style.pointerEvents = 'auto';
+            gsap.to(mainNav, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.1 });
         }
     };
 
