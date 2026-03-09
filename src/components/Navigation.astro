@@ -486,29 +486,4 @@ const { mainMenu, contactEmail } = settings;
 
     // Initialize Lucide icons
     if (window.lucide) window.lucide.createIcons();
-
-    // --- GLOBAL SHEET LINKS ---
-    // Intercept any link matching #sheet-name to open that sheet dynamically
-    document.addEventListener('click', (e) => {
-        const a = e.target.closest('a');
-        if (a) {
-            const href = a.getAttribute('href');
-            if (href && href.startsWith('#sheet-')) {
-                e.preventDefault();
-                const sheetName = href.replace('#sheet-', '');
-                if (window.openSheet) window.openSheet(sheetName);
-            }
-        }
-    });
-
-    // Also support checking URL hash on initial load
-    window.addEventListener('load', () => {
-        if (window.location.hash.startsWith('#sheet-')) {
-            const sheetName = window.location.hash.replace('#sheet-', '');
-            if (window.openSheet) {
-                // slight delay to let intro play/clear out before opening
-                setTimeout(() => window.openSheet(sheetName), 300);
-            }
-        }
-    });
 </script>
