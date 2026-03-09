@@ -515,34 +515,47 @@ const validGallery = (project.gallery || []).filter((item: any) => {
         window.addEventListener('load', initLightboxSwipe);
 
         // --- JS MASONRY CALCULATION ---
+        function resizeMasonryItem(item, gridMargin) {
+            const content = item.querySelector('.masonry-content');
+            if (!content) return;
+            const rowSpan = Math.ceil(content.getBoundingClientRect().height + gridMargin);
+            item.style.gridRowEnd = `span ${rowSpan}`;
+        }
+
         function resizeMasonryGrid() {
             const gallery = document.querySelector('.custom-gallery');
             if (!gallery) return;
 
-            // Get computed margin (gap) from the style block properties
             const compStyles = window.getComputedStyle(gallery);
             const gridMargin = parseInt(compStyles.getPropertyValue('column-gap')) || 10;
 
             const gridItems = document.querySelectorAll('.gallery-item');
-
             gridItems.forEach((item) => {
-                const content = item.querySelector('.masonry-content');
-                if (!content) return;
-
-                // Calculate how many 1px rows the element requires
-                const rowSpan = Math.ceil(content.getBoundingClientRect().height + gridMargin);
-
-                // Set the exact row span calculation directly on the item wrapper
-                item.style.gridRowEnd = `span ${rowSpan}`;
+                resizeMasonryItem(item, gridMargin);
             });
 
-            // Reveal gallery safely after calculations
             gallery.classList.remove('opacity-0');
         }
 
         // Run on load and whenever window resizes or images load
         window.addEventListener('load', resizeMasonryGrid);
         window.addEventListener('resize', resizeMasonryGrid);
+        
+        // Dynamic ResizeObserver ensures lazy-loaded images in Chrome don't overlap as they pop in
+        const ro = new ResizeObserver((entries) => {
+            const gallery = document.querySelector('.custom-gallery');
+            if (!gallery) return;
+            const gridMargin = parseInt(window.getComputedStyle(gallery).getPropertyValue('column-gap')) || 10;
+            
+            entries.forEach((entry) => {
+                const item = entry.target.closest('.gallery-item');
+                if (item) resizeMasonryItem(item, gridMargin);
+            });
+            gallery.classList.remove('opacity-0');
+        });
+
+        document.querySelectorAll('.masonry-content').forEach((content) => ro.observe(content));
+
         // Fallback catch if loaded from cache
         if (document.readyState === 'complete') {
             resizeMasonryGrid();
