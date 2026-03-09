@@ -44,10 +44,12 @@ const keywords = configData.seoKeywords ? configData.seoKeywords.join(', ') : un
 const canonicalURL = new URL(Astro.request.url, Astro.site);
 
 function formatCanonicalURL(url: string | URL) {
-    const urlObj = new URL(url.toString());
-    // Remove query params and trailing slash for cleaner canonical
-    urlObj.search = '';
-    return urlObj.toString().replace(/\/?$/, '/');
+    const path = url.toString();
+    const hasQueryParams = path.includes('?');
+    if (hasQueryParams) {
+        path.replace(/\/?$/, '');
+    }
+    return path.replace(/\/?$/, hasQueryParams ? '' : '/');
 }
 ---
 
@@ -108,10 +110,8 @@ function formatCanonicalURL(url: string | URL) {
         <!-- Page Metadata -->
         <link rel="canonical" href={formatCanonicalURL(canonicalURL)} />
         <meta name="description" content={description} />
-        <meta name="robots" content="index, follow" />
 
         <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website" />
         <meta property="og:url" content={formatCanonicalURL(canonicalURL)} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
