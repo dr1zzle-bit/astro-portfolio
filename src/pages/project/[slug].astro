@@ -143,6 +143,9 @@ const validGallery = (project.gallery || []).filter((item: any) => {
                                             src={thumb}
                                             alt={item.caption || 'YouTube Video'}
                                             class="w-full h-auto object-cover masonry-content"
+                                            width="480"
+                                            height="360"
+                                            style="aspect-ratio: 16 / 9;"
                                             loading="lazy"
                                             onload="window.dispatchEvent(new Event('resize'))"
                                         />
@@ -157,6 +160,16 @@ const validGallery = (project.gallery || []).filter((item: any) => {
                         }
 
                         // Default: Image
+                        let imgW, imgH, aspectStyle = '';
+                        if (item.asset && item.asset._ref) {
+                            const match = item.asset._ref.match(/-(\d+)x(\d+)-/);
+                            if (match) {
+                                imgW = match[1];
+                                imgH = match[2];
+                                aspectStyle = `aspect-ratio: ${imgW} / ${imgH};`;
+                            }
+                        }
+
                         return (
                             item.asset && (
                                 <div class="gallery-item w-full">
@@ -165,6 +178,9 @@ const validGallery = (project.gallery || []).filter((item: any) => {
                                             src={urlFor(item).width(800).format('webp').url()}
                                             alt={item.alt || ''}
                                             data-index={realIndex}
+                                            width={imgW}
+                                            height={imgH}
+                                            style={aspectStyle}
                                             class="w-full h-auto object-cover hover:scale-[1.02] hover:opacity-90 transition-[transform,opacity] duration-500 ease-in-out cursor-zoom-in gallery-img will-change-transform masonry-content"
                                             loading="lazy"
                                             onclick={`openLightbox(${realIndex})`}
@@ -515,11 +531,26 @@ const validGallery = (project.gallery || []).filter((item: any) => {
         window.addEventListener('load', initLightboxSwipe);
 
         // --- JS MASONRY CALCULATION ---
-        function resizeMasonryItem(item, gridMargin) {
+        let masonryTimer = null;
+
+        function recalcItem(item, gap) {
             const content = item.querySelector('.masonry-content');
             if (!content) return;
-            const rowSpan = Math.ceil(content.getBoundingClientRect().height + gridMargin);
-            item.style.gridRowEnd = `span ${rowSpan}`;
+            let h = content.getBoundingClientRect().height;
+            
+            // If Chrome has not painted lazy image, calculate via explicit attributes
+            if (h === 0 || h < 20) {
+                const w = content.getBoundingClientRect().width || item.getBoundingClientRect().width;
+                const aspectH = content.getAttribute('height');
+                const aspectW = content.getAttribute('width');
+                if (aspectW && aspectH && w > 0) {
+                    h = w * (parseFloat(aspectH) / parseFloat(aspectW));
+                }
+            }
+
+            if (h > 0) {
+                item.style.gridRowEnd = `span ${Math.ceil(h + gap)}`;
+            }
         }
 
         function resizeMasonryGrid() {
@@ -527,38 +558,49 @@ const validGallery = (project.gallery || []).filter((item: any) => {
             if (!gallery) return;
 
             const compStyles = window.getComputedStyle(gallery);
-            const gridMargin = parseInt(compStyles.getPropertyValue('column-gap')) || 10;
+            const gap = parseInt(compStyles.getPropertyValue('column-gap')) || 10;
 
             const gridItems = document.querySelectorAll('.gallery-item');
-            gridItems.forEach((item) => {
-                resizeMasonryItem(item, gridMargin);
-            });
+            gridItems.forEach((item) => recalcItem(item, gap));
 
+            // Reveal gallery safely after calculations
             gallery.classList.remove('opacity-0');
         }
 
-        // Run on load and whenever window resizes or images load
+        // Use ResizeObserver for reliable per-element size tracking (fixes Chrome overlap)
+        if (typeof ResizeObserver !== 'undefined') {
+            const gallery = document.querySelector('.custom-gallery');
+            const gap = gallery ? parseInt(window.getComputedStyle(gallery).getPropertyValue('column-gap')) || 10 : 10;
+
+            const ro = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    const item = entry.target.closest('.gallery-item');
+                    if (item) recalcItem(item, gap);
+                }
+                if (gallery) gallery.classList.remove('opacity-0');
+            });
+
+            document.querySelectorAll('.masonry-content').forEach((el) => ro.observe(el));
+        }
+
+        // Run on load and resize as fallback
         window.addEventListener('load', resizeMasonryGrid);
         window.addEventListener('resize', resizeMasonryGrid);
-        
-        // Dynamic ResizeObserver ensures lazy-loaded images in Chrome don't overlap as they pop in
-        const ro = new ResizeObserver((entries) => {
-            const gallery = document.querySelector('.custom-gallery');
-            if (!gallery) return;
-            const gridMargin = parseInt(window.getComputedStyle(gallery).getPropertyValue('column-gap')) || 10;
-            
-            entries.forEach((entry) => {
-                const item = entry.target.closest('.gallery-item');
-                if (item) resizeMasonryItem(item, gridMargin);
-            });
-            gallery.classList.remove('opacity-0');
-        });
 
-        document.querySelectorAll('.masonry-content').forEach((content) => ro.observe(content));
+        // Debounced retry: catches lazy-loaded images that Chrome renders late
+        function debouncedMasonry() {
+            clearTimeout(masonryTimer);
+            masonryTimer = setTimeout(resizeMasonryGrid, 100);
+        }
+        window.addEventListener('resize', debouncedMasonry);
 
         // Fallback catch if loaded from cache
         if (document.readyState === 'complete') {
             resizeMasonryGrid();
         }
+
+        // Extra safety: re-run after short delays to catch any stragglers
+        setTimeout(resizeMasonryGrid, 500);
+        setTimeout(resizeMasonryGrid, 1500);
     </script>
 </Layout>
