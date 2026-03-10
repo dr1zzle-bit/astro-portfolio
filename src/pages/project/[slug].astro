@@ -31,6 +31,8 @@ const validGallery = (project.gallery || []).filter((item: any) => {
     }
     return !!item.asset;
 });
+
+console.log('Sample gallery item:', JSON.stringify(validGallery[0] || {}, null, 2));
 ---
 
 <Layout title={project.title} seoTitle={project.seoTitle} seoDescription={project.seoDescription} seoImage={project.seoImage}>
@@ -160,8 +162,36 @@ const validGallery = (project.gallery || []).filter((item: any) => {
                         {(() => {
                             const colsCount = project.galleryColumns || 3;
                             const columns = Array.from({length: colsCount}, () => []);
+                            const colHeights = Array(colsCount).fill(0);
+
                             validGallery.forEach((item: any, index: number) => {
-                                columns[index % colsCount].push({ item, index });
+                                let aspectRatio = 1;
+
+                                if (item._type === 'youtube') {
+                                    aspectRatio = 16 / 9;
+                                } else if (item.asset?.metadata?.dimensions) {
+                                    const dims = item.asset.metadata.dimensions;
+                                    aspectRatio = dims.aspectRatio || (dims.width / dims.height);
+                                } else if (item._type === 'video') {
+                                    aspectRatio = 16 / 9; // Fallback for raw video URLs
+                                }
+
+                                // Calculate relative height based on a column width of 1 unit
+                                const itemHeight = 1 / Math.max(aspectRatio, 0.1);
+
+                                // Find the index of the shortest column
+                                let minColIndex = 0;
+                                let minHeight = colHeights[0];
+                                for (let i = 1; i < colsCount; i++) {
+                                    if (colHeights[i] < minHeight) {
+                                        minHeight = colHeights[i];
+                                        minColIndex = i;
+                                    }
+                                }
+
+                                // Push image to shortest column and update its height tracker
+                                columns[minColIndex].push({ item, index });
+                                colHeights[minColIndex] += itemHeight;
                             });
                             return columns.map((colItems: any) => (
                                 <div class="flex-1 flex flex-col" style={`gap: ${gridMargin}px;`}>
